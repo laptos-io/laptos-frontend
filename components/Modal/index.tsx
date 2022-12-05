@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/solid";
+import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import React, { Fragment, ReactNode, useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 
@@ -39,7 +39,7 @@ export default function Modal({
         <Dialog
           initialFocus={initialFocusRef}
           as="div"
-          className="fixed inset-0 z-10 mx-auto overflow-y-auto"
+          className="fixed inset-0 z-40 mx-auto overflow-y-auto"
           onClose={() => onDismiss()}
         >
           <div className="border-lighter flex min-h-screen items-center justify-center border px-4 text-center">
@@ -96,7 +96,7 @@ export default function Modal({
                     className="btn absolute top-4 right-4 p-2 text-sm"
                     onClick={() => onDismiss()}
                   >
-                    <XMarkIcon className="h-5 w-5 font-light" />
+                    <XCircleIcon className="h-5 w-5 font-light" />
                   </button>
                 )}
               </div>

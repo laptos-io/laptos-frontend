@@ -54,7 +54,7 @@ export default function SearchBox({
       <div className="group relative flex w-full items-center">
         <input
           placeholder={placeholder || "Search Collections"}
-          className={`w-full rounded-md border border-border bg-slate-50 py-2 pr-3 pl-8 leading-[22px] shadow-sm hover:border-border-hover focus:border-border-focus ${
+          className={`w-full rounded-md border-0 border-border bg-input-bg-default py-2 pr-3 pl-8 text-sm leading-6 shadow-sm hover:border-border-hover focus:border-border-focus ${
             disabled ? " cursor-not-allowed opacity-50" : ""
           }`}
           type="text"
