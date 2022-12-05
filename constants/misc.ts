@@ -17,9 +17,9 @@ export const APTOS_COIN_TYPE = "0x1::aptos_coin::AptosCoin";
 
 export const CoinListMapping = {
   [Network.Devnet]:
-    "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json",
+    "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json?network=devnet",
   [Network.Testnet]:
-    "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json",
+    "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json?network=testnet",
   [Network.Mainnet]:
-    "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json",
+    "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json?network=mainnet",
 };

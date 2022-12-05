@@ -19,6 +19,7 @@ module.exports = {
         "text-placeholder": "#7B858F",
         "text-disabled": "#7B858F",
         "bg-disabled": "#D9DEE2",
+        "input-bg-default": "#E6E8F0",
       },
       fontFamily: {
         Inter: ["Inter", "sans-serif"],
