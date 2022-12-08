@@ -23,3 +23,9 @@ export const CoinListMapping = {
   [Network.Mainnet]:
     "https://raw.githubusercontent.com/laptosio/asset_list/main/ft.testnet.json?network=mainnet",
 };
+
+export const ADMIN_ACCOUNT_DATA = {
+  privateKey: process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY,
+  publicKey: process.env.NEXT_PUBLIC_ADMIN_PUBLIC_KEY,
+  address: process.env.NEXT_PUBLIC_ADMIN_ADDRESS,
+};
