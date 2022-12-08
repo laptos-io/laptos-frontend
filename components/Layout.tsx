@@ -45,7 +45,10 @@ const Layout: React.FC<React.PropsWithChildren<{ children: ReactNode }>> = ({
   console.log("@@@ coinListStateValue", coinListStateValue);
 
   useEffect(() => {
-    setCoinListStateValue(coinListData);
+    setCoinListStateValue({
+      isOpen: false,
+      items: coinListData,
+    });
   }, [coinListData, setCoinListStateValue]);
 
   const isLoading = !network || (!coinListData && !error);

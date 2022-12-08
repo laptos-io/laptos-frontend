@@ -2,6 +2,7 @@ import { SignMessagePayload, useWallet } from "@manahippo/aptos-wallet-adapter";
 import { NextPage } from "next";
 import Head from "next/head";
 
+import CoinNavTabs from "@/components/CoinNavTabs";
 import useAptosWallet from "@/hooks/useAptosWallet";
 
 import SwapBox from "./components/SwapBox";
@@ -34,6 +35,7 @@ const SwapPage: NextPage = () => {
           <title>Laptos Swap</title>
         </Head>
         <div className="container mx-auto">
+          <CoinNavTabs />
           <SwapBox />
           <button
             className="bg-indigo-500 px-2 py-1.5 text-white"
