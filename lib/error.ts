@@ -1,12 +1,16 @@
 export const getErrMsg = (error?: any) => {
+  let refError = error;
+  let reason: string | undefined;
+  while (refError) {
+    reason = refError.reason ?? refError.message ?? reason;
+    refError = refError.error ?? refError.data?.originalError;
+  }
+
   const message =
+    reason ||
+    error?.message ||
     error?.response?.data ||
     error?.response?.message ||
-    error?.message ||
     JSON.stringify(error?.response);
-  return typeof message === "string"
-    ? message
-    : typeof message === "object"
-    ? JSON.stringify(message)
-    : message?.toString();
+  return message;
 };
