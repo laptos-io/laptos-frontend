@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 
 import { ICoinInfo } from "@/types/misc";
 
@@ -13,4 +13,19 @@ export const coinListState = atom({
     isOpen: false,
     items: [],
   } as CoinListState,
+});
+
+export const coinListMappingState = selector({
+  key: "coinListMapping",
+  get: ({ get }) => {
+    const { items } = get(coinListState);
+    const initValue: { [key: string]: ICoinInfo } = {};
+    // eslint-disable-next-line unicorn/no-array-reduce
+    return (items || []).reduce((prevValue, currItem) => {
+      return {
+        ...prevValue,
+        [currItem.token_type.type]: currItem,
+      };
+    }, initValue);
+  },
 });
