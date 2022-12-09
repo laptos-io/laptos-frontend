@@ -2,21 +2,22 @@ import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
 import SearchBox from "@/components/Header/SearchBox";
+import useAllPools from "@/hooks/useAllPairs";
 import useAptosClient from "@/hooks/useAptosClient";
 import useCoinBalance from "@/hooks/useCoinBalance";
 import useCoinList from "@/hooks/useCoinList";
 import { ICoinInfo } from "@/types/misc";
 
 import CreatePoolDialog from "./CreatePoolDialog";
+import TokenPairLogo from "./TokenPairLogo";
 
 const AllPools = () => {
-  const aptosClient = useAptosClient();
-
   const [q, setQ] = useState("");
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCreatePoolDialogOpen, setIsCreatePoolDialogOpen] = useState(false);
 
+  const allValidPairs = useAllPools();
   return (
     <>
       <div className="w-full">
@@ -82,6 +83,40 @@ const AllPools = () => {
             <PlusCircleIcon className="h-4 w-4" />
             <span>Create Pool</span>
           </button>
+        </div>
+
+        <div className="sticky top-0 h-screen w-full">
+          {allValidPairs?.length === 0 ? (
+            <div className="flex min-h-[240px] w-full items-center justify-center">
+              <span className="text-sm text-slate-300">Empty Pools</span>
+            </div>
+          ) : (
+            <div className="w-full space-y-5 py-5">
+              {allValidPairs.map(({ xCoin, yCoin, LPResource }, index) => {
+                return (
+                  <div
+                    key={LPResource.type}
+                    className="card relative w-full px-4 py-3"
+                  >
+                    <div className="mb-4 flex w-full items-center justify-between">
+                      <span className="inline-flex items-center space-x-2">
+                        <TokenPairLogo xCoin={xCoin} yCoin={yCoin} />
+                        <span className="text-lg font-semibold">
+                          {(LPResource.data as any)?.symbol}
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex w-full items-center justify-between">
+                      <span></span>
+                      <button className="rounded-lg bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-lighter">
+                        Add Liquidity
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
       <CreatePoolDialog
