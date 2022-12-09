@@ -28,7 +28,8 @@ export default function useAllPairs() {
           xCoinType &&
           coinListMapping[xCoinType] &&
           yCoinType &&
-          coinListMapping[yCoinType]
+          coinListMapping[yCoinType] &&
+          (resource.data as any).symbol
         ) {
           res.push({
             xCoin: coinListMapping[xCoinType],
