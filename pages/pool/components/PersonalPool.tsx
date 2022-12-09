@@ -1,12 +1,10 @@
 import useAptosClient from "@/hooks/useAptosClient";
 import useCoinBalance from "@/hooks/useCoinBalance";
-import useCoinList from "@/hooks/useCoinList";
 import { ICoinInfo } from "@/types/misc";
 
 const PersonalPool = () => {
   const aptosClient = useAptosClient();
 
-  const coinList = useCoinList();
   return (
     <div className="w-full">
       <div className="card flex w-full items-center justify-start rounded-3xl">

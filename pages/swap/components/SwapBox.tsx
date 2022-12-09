@@ -1,6 +1,8 @@
+import { useRecoilValue } from "recoil";
+
 import useAptosClient from "@/hooks/useAptosClient";
 import useCoinBalance from "@/hooks/useCoinBalance";
-import useCoinList from "@/hooks/useCoinList";
+import { coinListState } from "@/recoil/coinList";
 import { ICoinInfo } from "@/types/misc";
 
 const CoinWithBalance = ({ coinInfo }: { coinInfo: ICoinInfo }) => {
@@ -15,7 +17,7 @@ const CoinWithBalance = ({ coinInfo }: { coinInfo: ICoinInfo }) => {
 const SwapBox = () => {
   const aptosClient = useAptosClient();
 
-  const coinList = useCoinList();
+  const { items: coinList } = useRecoilValue(coinListState);
   return (
     <>
       <div className="card mx-auto w-screen max-w-[600px]">
@@ -23,7 +25,7 @@ const SwapBox = () => {
 
         <div className="">
           <h2>Account Balance: </h2>
-          {coinList?.slice(0, 1).map((coin) => {
+          {(coinList || []).map((coin) => {
             return <CoinWithBalance key={coin.symbol} coinInfo={coin} />;
           })}
         </div>

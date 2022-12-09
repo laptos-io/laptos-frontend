@@ -42,8 +42,6 @@ const Layout: React.FC<React.PropsWithChildren<{ children: ReactNode }>> = ({
     {}
   );
 
-  console.log("@@@ coinListStateValue", coinListStateValue);
-
   useEffect(() => {
     setCoinListStateValue({
       isOpen: false,

@@ -5,9 +5,10 @@ import SearchBox from "@/components/Header/SearchBox";
 import useAllPools from "@/hooks/useAllPairs";
 import useAptosClient from "@/hooks/useAptosClient";
 import useCoinBalance from "@/hooks/useCoinBalance";
-import useCoinList from "@/hooks/useCoinList";
+import { ITokenPair } from "@/types/aptos";
 import { ICoinInfo } from "@/types/misc";
 
+import AddLiquidityDialog from "./AddLiquidityDialog";
 import CreatePoolDialog from "./CreatePoolDialog";
 import TokenPairLogo from "./TokenPairLogo";
 
@@ -15,9 +16,14 @@ const AllPools = () => {
   const [q, setQ] = useState("");
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isCreatePoolDialogOpen, setIsCreatePoolDialogOpen] = useState(false);
 
   const allValidPairs = useAllPools();
+  const [selectPair, setSelectedPair] = useState<ITokenPair>();
+  const [isCreatePoolDialogOpen, setIsCreatePoolDialogOpen] = useState(false);
+
+  const [isAddLiquidityDialogOpen, setIsAddLiquidityDialogOpen] =
+    useState(false);
+
   return (
     <>
       <div className="w-full">
@@ -92,7 +98,8 @@ const AllPools = () => {
             </div>
           ) : (
             <div className="w-full space-y-5 py-5">
-              {allValidPairs.map(({ xCoin, yCoin, LPResource }, index) => {
+              {allValidPairs.map((pairItem) => {
+                const { xCoin, yCoin, LPResource } = pairItem;
                 return (
                   <div
                     key={LPResource.type}
@@ -108,7 +115,13 @@ const AllPools = () => {
                     </div>
                     <div className="flex w-full items-center justify-between">
                       <span></span>
-                      <button className="rounded-lg bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-lighter">
+                      <button
+                        className="rounded-lg bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-lighter"
+                        onClick={() => {
+                          setSelectedPair(pairItem);
+                          setIsAddLiquidityDialogOpen(true);
+                        }}
+                      >
                         Add Liquidity
                       </button>
                     </div>
@@ -122,6 +135,16 @@ const AllPools = () => {
       <CreatePoolDialog
         isOpen={isCreatePoolDialogOpen}
         onDismiss={() => setIsCreatePoolDialogOpen(false)}
+      />
+      <AddLiquidityDialog
+        isOpen={isAddLiquidityDialogOpen}
+        tokenPair={selectPair}
+        onDismiss={() => {
+          setIsAddLiquidityDialogOpen(false);
+          setTimeout(() => {
+            setSelectedPair(undefined);
+          }, 300);
+        }}
       />
     </>
   );
