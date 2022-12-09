@@ -1,4 +1,7 @@
 import { AptosAccount, AptosAccountObject, HexString } from "aptos";
+import { MoveResource } from "aptos/src/generated";
+
+import { ICoinInfo } from "./misc";
 
 export type AptosAccountState = AptosAccount | undefined;
 
@@ -24,4 +27,10 @@ export interface AccountCoinBalance {
     balance?: string;
     displayed?: string;
   };
+}
+
+export interface ITokenPair {
+  xCoin: ICoinInfo;
+  yCoin: ICoinInfo;
+  LPResource: MoveResource;
 }
