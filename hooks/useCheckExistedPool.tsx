@@ -33,7 +33,6 @@ export default function useCheckExistedPool(
   }, [network, resources, xCoinType, yCoinType]);
 
   return useMemo(() => {
-    console.log(data);
     return {
       data,
       isValidating,

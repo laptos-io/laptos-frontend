@@ -15,7 +15,6 @@ export default function useCreatePoolByAdmin(
   const adminAccount = useAdminAccount();
 
   const mutate = useCallback(async () => {
-    console.log(1234, adminAccount, payload);
     if (!adminAccount || !payload) {
       setError(new Error("Invalid admin account"));
       return;

@@ -1,18 +1,19 @@
 import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRecoilValue } from "recoil";
 
 import { APTOS_COIN_TYPE } from "@/constants/misc";
+import { coinListState } from "@/recoil/coinList";
 
 import useAptosClient from "./useAptosClient";
 import useAptosWallet from "./useAptosWallet";
-import useCoinList from "./useCoinList";
 
 function useCoinBalance(coinType?: string) {
   const [balance, setBalance] = useState<string>();
   const [displayed, setDisplayed] = useState<string>();
   const { connected, activeWallet } = useAptosWallet();
   const aptosClient = useAptosClient();
-  const coinList = useCoinList();
+  const { items: coinList } = useRecoilValue(coinListState);
 
   const coin = useMemo(() => {
     const aptosCoin = coinList.find(

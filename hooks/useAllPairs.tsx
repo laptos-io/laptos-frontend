@@ -4,6 +4,7 @@ import { useRecoilValue } from "recoil";
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import { coinListMappingState } from "@/recoil/coinList";
 import { networkState } from "@/recoil/network";
+import { ITokenPair } from "@/types/aptos";
 
 import useAccountResources from "./useAccountResources";
 
@@ -19,7 +20,7 @@ export default function useAllPairs() {
 
   const validCoinPairs = useMemo(() => {
     if (!resources) return [];
-    const res = [];
+    const res: ITokenPair[] = [];
     for (const resource of resources) {
       if (/linear_swap::LPToken<(.*),\s?(.*)>>$/.test(resource.type)) {
         const [_, xCoinType, yCoinType] =
