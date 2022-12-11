@@ -87,7 +87,6 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
   const onAddLiquidity = useCallback(async () => {
     if (disableSubmit || !addLiquidityPayload) return;
 
-    console.log("@@@ add_liquidity_script", addLiquidityPayload);
     try {
       setPending(true);
       const pendingTx = await signAndSubmitTransaction(addLiquidityPayload);
