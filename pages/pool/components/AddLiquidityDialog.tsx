@@ -17,7 +17,6 @@ import useCheckExistedPool from "@/hooks/useCheckExistedPool";
 import { getErrMsg } from "@/lib/error";
 import { networkState } from "@/recoil/network";
 import { ITokenPair } from "@/types/aptos";
-import { ICoinInfo } from "@/types/misc";
 
 interface DialogProps {
   isOpen: boolean;
@@ -134,9 +133,8 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
                   <div className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"></div>
                 )}
               </div>
-              <span className="text-base font-semibold">{xCoin?.symbol}</span>
             </div>
-            <ChevronDownIcon className="h-4 w-4" />
+            <span className="text-base font-semibold">{xCoin?.symbol}</span>
           </div>
 
           <div className="my-6 w-full"></div>
@@ -153,9 +151,8 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
                   <div className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"></div>
                 )}
               </div>
-              <span className="text-base font-semibold">{yCoin?.symbol}</span>
             </div>
-            <ChevronDownIcon className="h-4 w-4" />
+            <span className="text-base font-semibold">{yCoin?.symbol}</span>
           </div>
 
           <div className="my-6 w-full"></div>

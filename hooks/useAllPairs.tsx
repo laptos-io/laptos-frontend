@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import { coinListMappingState } from "@/recoil/coinList";
 import { networkState } from "@/recoil/network";
-import { ITokenPair } from "@/types/aptos";
+import { ITokenPair, TokenPairMetadata } from "@/types/aptos";
 
 import useAccountResources from "./useAccountResources";
 
@@ -20,26 +20,72 @@ export default function useAllPairs() {
 
   const validCoinPairs = useMemo(() => {
     if (!resources) return [];
-    const res: ITokenPair[] = [];
+
+    const tempTokenPairMapping: Record<string, ITokenPair> = {};
     for (const resource of resources) {
-      if (/linear_swap::LPToken<(.*),\s?(.*)>>$/.test(resource.type)) {
+      if (
+        /linear_swap::LPToken<(.*),\s?(.*)>>$/.test(resource.type) &&
+        (resource.data as any).symbol
+      ) {
         const [_, xCoinType, yCoinType] =
           resource.type.match(/linear_swap::LPToken<(.*),\s?(.*)>>$/) || [];
+
+        if (!tempTokenPairMapping[`${xCoinType},${yCoinType}`]) {
+          tempTokenPairMapping[`${xCoinType},${yCoinType}`] = {};
+        }
+        tempTokenPairMapping[`${xCoinType},${yCoinType}`].LPToken = resource;
         if (
-          xCoinType &&
           coinListMapping[xCoinType] &&
-          yCoinType &&
-          coinListMapping[yCoinType] &&
-          (resource.data as any).symbol
+          !tempTokenPairMapping[`${xCoinType},${yCoinType}`].xCoin
         ) {
-          res.push({
-            xCoin: coinListMapping[xCoinType],
-            yCoin: coinListMapping[yCoinType],
-            LPResource: resource,
-          });
+          tempTokenPairMapping[`${xCoinType},${yCoinType}`].xCoin =
+            coinListMapping[xCoinType];
+        }
+        if (
+          coinListMapping[yCoinType] &&
+          !tempTokenPairMapping[`${xCoinType},${yCoinType}`].yCoin
+        ) {
+          tempTokenPairMapping[`${xCoinType},${yCoinType}`].yCoin =
+            coinListMapping[yCoinType];
+        }
+        // if (
+        //   xCoinType &&
+        //   coinListMapping[xCoinType] &&
+        //   yCoinType &&
+        //   coinListMapping[yCoinType] &&
+        //   (resource.data as any).symbol
+        // ) {
+        //   // console.log(resource);
+        //   // res.push({
+        //   //   xCoin: coinListMapping[xCoinType],
+        //   //   yCoin: coinListMapping[yCoinType],
+        //   //   LPResource: resource,
+        //   // });
+        // }
+      } else if (
+        /linear_swap::TokenPairMetadata<(.*),\s?(.*)>$/.test(resource.type)
+      ) {
+        const [_, xCoinType, yCoinType] =
+          resource.type.match(
+            /linear_swap::TokenPairMetadata<(.*),\s?(.*)>$/
+          ) || [];
+
+        if (!tempTokenPairMapping[`${xCoinType},${yCoinType}`]) {
+          tempTokenPairMapping[`${xCoinType},${yCoinType}`] = {};
+        }
+        tempTokenPairMapping[`${xCoinType},${yCoinType}`].tokenPairMetadata =
+          resource as TokenPairMetadata;
+        if (
+          coinListMapping[yCoinType] &&
+          !tempTokenPairMapping[`${xCoinType},${yCoinType}`].yCoin
+        ) {
+          tempTokenPairMapping[`${xCoinType},${yCoinType}`].yCoin =
+            coinListMapping[yCoinType];
         }
       }
     }
+
+    const res: ITokenPair[] = Object.values(tempTokenPairMapping);
     return res;
   }, [coinListMapping, resources]);
 

@@ -29,8 +29,27 @@ export interface AccountCoinBalance {
   };
 }
 
+// export interface ITokenPair {
+//   xCoin: ICoinInfo;
+//   yCoin: ICoinInfo;
+//   LPResource: MoveResource;
+// }
+
+export interface TokenPairMetadata extends MoveResource {
+  creator: string;
+  fee_on: boolean;
+  k_last: string;
+  balance_x: {
+    value: string;
+  };
+  balance_y: {
+    value: string;
+  };
+}
+
 export interface ITokenPair {
-  xCoin: ICoinInfo;
-  yCoin: ICoinInfo;
-  LPResource: MoveResource;
+  xCoin?: ICoinInfo;
+  yCoin?: ICoinInfo;
+  LPToken?: MoveResource;
+  tokenPairMetadata?: TokenPairMetadata;
 }

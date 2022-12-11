@@ -3,10 +3,7 @@ import { useState } from "react";
 
 import SearchBox from "@/components/Header/SearchBox";
 import useAllPools from "@/hooks/useAllPairs";
-import useAptosClient from "@/hooks/useAptosClient";
-import useCoinBalance from "@/hooks/useCoinBalance";
 import { ITokenPair } from "@/types/aptos";
-import { ICoinInfo } from "@/types/misc";
 
 import AddLiquidityDialog from "./AddLiquidityDialog";
 import CreatePoolDialog from "./CreatePoolDialog";
@@ -99,17 +96,17 @@ const AllPools = () => {
           ) : (
             <div className="w-full space-y-5 py-5">
               {allValidPairs.map((pairItem) => {
-                const { xCoin, yCoin, LPResource } = pairItem;
+                const { xCoin, yCoin, LPToken } = pairItem;
                 return (
                   <div
-                    key={LPResource.type}
+                    key={LPToken!.type}
                     className="card relative w-full px-4 py-3"
                   >
                     <div className="mb-4 flex w-full items-center justify-between">
                       <span className="inline-flex items-center space-x-2">
-                        <TokenPairLogo xCoin={xCoin} yCoin={yCoin} />
+                        <TokenPairLogo xCoin={xCoin!} yCoin={yCoin!} />
                         <span className="text-lg font-semibold">
-                          {(LPResource.data as any)?.symbol}
+                          {(LPToken!.data as any)?.symbol}
                         </span>
                       </span>
                     </div>
