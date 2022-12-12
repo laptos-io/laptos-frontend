@@ -17,6 +17,8 @@ import { coinListState } from "@/recoil/coinList";
 import { networkState } from "@/recoil/network";
 import { ICoinInfo } from "@/types/misc";
 
+import TokenInputPanel from "./TokenInputPanel";
+
 const CoinWithBalance = ({ coinInfo }: { coinInfo: ICoinInfo }) => {
   const balance = useCoinBalance(coinInfo?.token_type?.type);
   return (
@@ -40,6 +42,12 @@ const SwapBox = () => {
   const [xCoin, setXCoin] = useState<ICoinInfo>();
   const [yCoin, setYCoin] = useState<ICoinInfo>();
 
+  const [xCoinInput, setXCoinInput] = useState<string>();
+  const [yCoinInput, setYCoinInput] = useState<string>();
+
+  const [xAmount, setXAmount] = useState<string>("100000");
+  const [yAmount, setYAmount] = useState<string>("10000000");
+
   const [isSelectCoinDialogOpen, setIsSelectCoinDialogOpen] = useState(false);
   const [tokenPosition, setTokenPosition] = useState<TokenPosition>();
 
@@ -49,8 +57,28 @@ const SwapBox = () => {
     }
   }, [isSelectCoinDialogOpen]);
 
-  const [xAmount, setXAmount] = useState<string>("1000000");
-  const [yAmount, setYAmount] = useState<string>("10000000");
+  const onSelectToken = useCallback(
+    (position: TokenPosition, token: ICoinInfo | undefined) => {
+      if (position === TokenPosition.X) {
+        if (yCoin && token?.token_type.type === yCoin?.token_type.type) {
+          const prevXCoin = xCoin;
+          setXCoin(token);
+          setYCoin(prevXCoin);
+        } else {
+          setXCoin(token);
+        }
+      } else if (position === TokenPosition.Y) {
+        if (xCoin && token?.token_type.type === xCoin?.token_type.type) {
+          const prevYCoin = yCoin;
+          setYCoin(token);
+          setXCoin(prevYCoin);
+        } else {
+          setYCoin(token);
+        }
+      }
+    },
+    [xCoin, yCoin]
+  );
 
   const [pending, setPending] = useState(false);
   const [pendingTx, setPendingTx] = useState<PendingTransaction>();
@@ -70,28 +98,33 @@ const SwapBox = () => {
   const { signAndSubmitTransaction } = useWallet();
 
   const disableSubmit = useMemo(() => {
-    return (
+    return Boolean(
       !activeWallet ||
-      !xCoin ||
-      !yCoin ||
-      xCoin.token_type.type === yCoin.token_type.type ||
-      !isValidPool ||
-      !xAmount ||
-      !yAmount
+        !xCoin ||
+        !yCoin ||
+        xCoin.token_type.type === yCoin.token_type.type ||
+        !isValidPool
     );
   }, [activeWallet, isValidPool, xAmount, xCoin, yAmount, yCoin]);
 
+  console.log(12_345, {
+    activeWallet,
+    xCoin,
+    yCoin,
+    isValidPool,
+  });
+
   const addLiquidityPayload = useMemo(() => {
     if (disableSubmit) return;
-    const args = [xAmount, yAmount];
+    const args = [xAmount, "0", `0`, "0"];
     const payload: Types.TransactionPayload_EntryFunctionPayload = {
       type: "entry_function_payload",
-      function: `${FT_SWAP_ADDRESSES[network]}::LinearScripts::add_liquidity_script`,
+      function: `${FT_SWAP_ADDRESSES[network]}::LinearScripts::swap_script`,
       type_arguments: [xCoin!.token_type.type, yCoin!.token_type.type],
       arguments: args,
     };
     return payload;
-  }, [disableSubmit, network, xAmount, xCoin, yAmount, yCoin]);
+  }, [disableSubmit, network, xAmount, xCoin, yCoin]);
 
   useEffect(() => {
     const errMsg = getErrMsg(error);
@@ -102,7 +135,7 @@ const SwapBox = () => {
     }
   }, [error, pending, pendingTx]);
 
-  const onAddLiquidity = useCallback(async () => {
+  const onSwap = useCallback(async () => {
     if (disableSubmit || !addLiquidityPayload) return;
 
     try {
@@ -130,7 +163,7 @@ const SwapBox = () => {
   return (
     <>
       <div className="card mx-auto mt-6 w-full max-w-[480px] pt-5">
-        <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
+        {/* <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
           <div className="flex flex-1 items-center justify-start">
             <div className="relative mr-2 h-[40px] w-[40px] shrink-0">
               {xCoin?.logo_url ? (
@@ -154,11 +187,17 @@ const SwapBox = () => {
             <span className="text-base font-semibold">{xCoin?.symbol}</span>
             <ChevronDownIcon className="h-4 w-4" />
           </button>
-        </div>
+        </div> */}
+        <TokenInputPanel
+          token={xCoin}
+          inputDisplayed={xCoinInput}
+          onChangeAmount={(val?: string) => setXCoinInput(val)}
+          onSelectToken={(token) => onSelectToken(TokenPosition.X, token)}
+        />
 
         <div className="my-6 w-full"></div>
 
-        <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
+        {/* <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
           <div className="flex flex-1 items-center justify-start">
             <div className="relative mr-2 h-[40px] w-[40px] shrink-0">
               {yCoin?.logo_url ? (
@@ -182,7 +221,13 @@ const SwapBox = () => {
             <span className="text-base font-semibold">{yCoin?.symbol}</span>
             <ChevronDownIcon className="h-4 w-4" />
           </button>
-        </div>
+        </div> */}
+        <TokenInputPanel
+          token={yCoin}
+          inputDisplayed={yCoinInput}
+          onChangeAmount={(val?: string) => setYCoinInput(val)}
+          onSelectToken={(token) => onSelectToken(TokenPosition.Y, token)}
+        />
 
         <div className="my-6 w-full"></div>
 
@@ -194,7 +239,7 @@ const SwapBox = () => {
                 ? "cursor-not-allowed bg-bg-disabled text-text-disabled"
                 : "cursor-pointer bg-primary text-white hover:bg-primary-lighter"
             }`}
-            onClick={() => (onAddLiquidity ? onAddLiquidity() : null)}
+            onClick={onSwap}
           >
             {isCheckingExistedPool ? (
               <>
