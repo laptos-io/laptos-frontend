@@ -182,31 +182,6 @@ const SwapBox = () => {
   return (
     <>
       <div className="card mx-auto mt-6 w-full max-w-[480px] pt-5">
-        {/* <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
-          <div className="flex flex-1 items-center justify-start">
-            <div className="relative mr-2 h-[40px] w-[40px] shrink-0">
-              {xCoin?.logo_url ? (
-                <div
-                  className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"
-                  style={{ backgroundImage: `url(${xCoin?.logo_url})` }}
-                ></div>
-              ) : (
-                <div className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"></div>
-              )}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="inline-flex items-center space-x-2"
-            onClick={() => {
-              setTokenPosition(TokenPosition.X);
-              setIsSelectCoinDialogOpen(true);
-            }}
-          >
-            <span className="text-base font-semibold">{xCoin?.symbol}</span>
-            <ChevronDownIcon className="h-4 w-4" />
-          </button>
-        </div> */}
         <TokenInputPanel
           token={xCoin}
           inputDisplayed={xCoinInput}
@@ -218,31 +193,6 @@ const SwapBox = () => {
 
         <div className="my-6 w-full"></div>
 
-        {/* <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
-          <div className="flex flex-1 items-center justify-start">
-            <div className="relative mr-2 h-[40px] w-[40px] shrink-0">
-              {yCoin?.logo_url ? (
-                <div
-                  className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"
-                  style={{ backgroundImage: `url(${yCoin?.logo_url})` }}
-                ></div>
-              ) : (
-                <div className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"></div>
-              )}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="inline-flex items-center space-x-2"
-            onClick={() => {
-              setTokenPosition(TokenPosition.Y);
-              setIsSelectCoinDialogOpen(true);
-            }}
-          >
-            <span className="text-base font-semibold">{yCoin?.symbol}</span>
-            <ChevronDownIcon className="h-4 w-4" />
-          </button>
-        </div> */}
         <TokenInputPanel
           token={yCoin}
           inputDisplayed={yCoinInput}
