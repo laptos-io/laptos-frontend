@@ -21,9 +21,20 @@ function getBestTrade(
       outputAmount?: string;
     }
   | undefined {
-  if (currentRoutes?.length > maxHops) return;
+  if (currentRoutes?.length > 3 || maxHops === 0) return;
 
-  if (inputToken?.token_type?.type === targetOutputToken.token_type.type) {
+  console.log(
+    currentRoutes,
+    inputToken?.token_type?.type,
+    targetOutputToken.token_type.type,
+    inputToken?.token_type?.type === targetOutputToken.token_type.type,
+    inputAmount,
+    maxHops
+  );
+  if (
+    inputToken?.token_type?.type &&
+    inputToken?.token_type?.type === targetOutputToken.token_type.type
+  ) {
     // 当前 pair 就是
     return {
       routes: currentRoutes,
@@ -130,6 +141,6 @@ export default function useBestTrade(
           3
         )
       : undefined;
-  console.log("@@@ bestTrade", bestTrade);
+  // console.log("@@@ bestTrade", bestTrade);
   return bestTrade;
 }
