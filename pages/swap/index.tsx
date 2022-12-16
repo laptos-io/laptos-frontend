@@ -38,12 +38,6 @@ const SwapPage: NextPage = () => {
         <div className="container mx-auto">
           <CoinNavTabs />
           <SwapBox />
-          <button
-            className="bg-indigo-500 px-2 py-1.5 text-white"
-            onClick={() => onSignMessage()}
-          >
-            Sign Message
-          </button>
         </div>
       </div>
     </>
