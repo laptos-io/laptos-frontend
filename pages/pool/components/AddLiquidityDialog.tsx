@@ -1,7 +1,9 @@
+import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { useWallet } from "@manahippo/aptos-wallet-adapter";
 import { Types } from "aptos";
 import { PendingTransaction } from "aptos/src/generated";
+import TokenInputPanel from "pages/swap/components/TokenInputPanel";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
@@ -14,6 +16,7 @@ import useAccountResources from "@/hooks/useAccountResources";
 import useAptosClient from "@/hooks/useAptosClient";
 import useAptosWallet from "@/hooks/useAptosWallet";
 import useCheckExistedPool from "@/hooks/useCheckExistedPool";
+import useTokenInput from "@/hooks/useTokenInput";
 import { getErrMsg } from "@/lib/error";
 import { networkState } from "@/recoil/network";
 import { ITokenPair } from "@/types/aptos";
@@ -24,6 +27,49 @@ interface DialogProps {
   onDismiss: () => void;
 }
 
+enum TokenPosition {
+  X,
+  Y,
+}
+
+const getAnotherAmountByPair = (
+  tokenPair: ITokenPair | undefined,
+  tokenPosition: TokenPosition,
+  value: string | undefined
+) => {
+  if (
+    !tokenPair ||
+    !tokenPair?.xCoin ||
+    !tokenPair?.yCoin ||
+    !tokenPair.tokenPairMetadata?.data
+  )
+    return undefined;
+  const { xCoin, yCoin, tokenPairMetadata } = tokenPair;
+  const { balance_x, balance_y } = tokenPairMetadata.data;
+  if (!balance_x || !balance_y) return undefined;
+  if (tokenPosition === TokenPosition.X) {
+    const xAmount = value ? parseFixed(value, xCoin.decimals) : undefined;
+    // should return amountY
+    const yAmount =
+      xAmount && BigNumber.isBigNumber(xAmount)
+        ? xAmount
+            .mul(BigNumber.from(balance_y.value))
+            .div(BigNumber.from(balance_x.value))
+        : undefined;
+    return yAmount ? formatFixed(yAmount, yCoin.decimals) : undefined;
+  } else {
+    const yAmount = value ? parseFixed(value, yCoin.decimals) : undefined;
+    // should return amountX
+    const xAmount =
+      yAmount && BigNumber.isBigNumber(yAmount)
+        ? yAmount
+            .mul(BigNumber.from(balance_x.value))
+            .div(BigNumber.from(balance_y.value))
+        : undefined;
+    return xAmount ? formatFixed(xAmount, xCoin.decimals) : undefined;
+  }
+};
+
 const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
   const { network } = useRecoilValue(networkState);
 
@@ -31,8 +77,41 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
 
   const { xCoin, yCoin } = tokenPair ?? {};
 
-  const [xAmount, setXAmount] = useState<string>("1000000");
-  const [yAmount, setYAmount] = useState<string>("10000000");
+  const [xCoinInput, setXCoinInput] = useState<string>();
+  const [yCoinInput, setYCoinInput] = useState<string>();
+
+  const {
+    balance: xCoinBalance,
+    balanceDisplayed: xCoinBalanceDisplayed,
+    inputAmount: xAmount,
+    isLoading: isGettingXCoinBalance,
+    error: xCoinInputError,
+  } = useTokenInput(xCoin, xCoinInput);
+
+  const {
+    balance: yCoinBalance,
+    balanceDisplayed: yCoinBalanceDisplayed,
+    inputAmount: yAmount,
+    isLoading: isGettingYCoinBalance,
+    error: yCoinInputError,
+  } = useTokenInput(yCoin, yCoinInput);
+
+  const onChangeTokenAmount = useCallback(
+    (tokenPosition: TokenPosition, value: string | undefined) => {
+      if (tokenPosition === TokenPosition.X) {
+        setXCoinInput(value);
+        setYCoinInput(
+          getAnotherAmountByPair(tokenPair, TokenPosition.X, value)
+        );
+      } else {
+        setYCoinInput(value);
+        setXCoinInput(
+          getAnotherAmountByPair(tokenPair, TokenPosition.Y, value)
+        );
+      }
+    },
+    [tokenPair]
+  );
 
   const [pending, setPending] = useState(false);
   const [pendingTx, setPendingTx] = useState<PendingTransaction>();
@@ -114,45 +193,35 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
   return (
     <>
       <Modal
-        title="Create Pool"
+        title="Add Liquidity"
         isOpen={isOpen}
         onDismiss={onDismiss}
         maxWidth={"480px"}
       >
         <div className="w-full pt-5">
-          <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
-            <div className="flex flex-1 items-center justify-start">
-              <div className="relative mr-2 h-[40px] w-[40px] shrink-0">
-                {xCoin?.logo_url ? (
-                  <div
-                    className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${xCoin?.logo_url})` }}
-                  ></div>
-                ) : (
-                  <div className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"></div>
-                )}
-              </div>
-            </div>
-            <span className="text-base font-semibold">{xCoin?.symbol}</span>
-          </div>
+          <TokenInputPanel
+            token={xCoin}
+            inputDisplayed={xCoinInput}
+            disableSelectToken
+            balanceDisplayed={xCoinBalanceDisplayed}
+            isGettingBalance={isGettingXCoinBalance}
+            onChangeAmount={(val?: string) => {
+              onChangeTokenAmount(TokenPosition.X, val);
+            }}
+          />
 
           <div className="my-6 w-full"></div>
 
-          <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
-            <div className="flex flex-1 items-center justify-start">
-              <div className="relative mr-2 h-[40px] w-[40px] shrink-0">
-                {yCoin?.logo_url ? (
-                  <div
-                    className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${yCoin?.logo_url})` }}
-                  ></div>
-                ) : (
-                  <div className="absolute inset-1 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat"></div>
-                )}
-              </div>
-            </div>
-            <span className="text-base font-semibold">{yCoin?.symbol}</span>
-          </div>
+          <TokenInputPanel
+            token={yCoin}
+            inputDisplayed={yCoinInput}
+            disableSelectToken
+            balanceDisplayed={yCoinBalanceDisplayed}
+            isGettingBalance={isGettingYCoinBalance}
+            onChangeAmount={(val?: string) => {
+              onChangeTokenAmount(TokenPosition.Y, val);
+            }}
+          />
 
           <div className="my-6 w-full"></div>
 

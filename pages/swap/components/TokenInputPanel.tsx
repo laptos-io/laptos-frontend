@@ -9,7 +9,8 @@ interface Props {
   inputDisplayed?: string;
   balanceDisplayed?: string;
   isGettingBalance?: boolean;
-  onSelectToken: (token: ICoinInfo) => void;
+  disableSelectToken?: boolean;
+  onSelectToken?: (token: ICoinInfo) => void;
   onChangeAmount: (value?: string) => void;
 }
 
@@ -18,6 +19,7 @@ export default function TokenInputPanel({
   inputDisplayed = "",
   balanceDisplayed,
   isGettingBalance,
+  disableSelectToken,
   onSelectToken,
   onChangeAmount,
 }: Props) {
@@ -53,16 +55,22 @@ export default function TokenInputPanel({
                 )}
               </div>
             </div>
-            <button
-              type="button"
-              className="inline-flex items-center space-x-2"
-              onClick={() => {
-                setIsSelectCoinDialogOpen(true);
-              }}
-            >
-              <span className="text-base font-semibold">{token?.symbol}</span>
-              <ChevronDownIcon className="h-4 w-4" />
-            </button>
+            {disableSelectToken ? (
+              <div className="inline-flex items-center space-x-2">
+                <span className="text-base font-semibold">{token?.symbol}</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="inline-flex items-center space-x-2"
+                onClick={() => {
+                  setIsSelectCoinDialogOpen(true);
+                }}
+              >
+                <span className="text-base font-semibold">{token?.symbol}</span>
+                <ChevronDownIcon className="h-4 w-4" />
+              </button>
+            )}
           </div>
         ) : (
           <button
@@ -85,7 +93,7 @@ export default function TokenInputPanel({
         isOpen={isSelectCoinDialogOpen}
         onDismiss={() => setIsSelectCoinDialogOpen(false)}
         onSelect={(token) => {
-          onSelectToken(token);
+          onSelectToken && onSelectToken(token);
           setIsSelectCoinDialogOpen(false);
         }}
       />
