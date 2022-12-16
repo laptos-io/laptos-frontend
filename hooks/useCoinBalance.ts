@@ -17,6 +17,7 @@ function useCoinBalance(coinType?: string, refreshInterval?: number) {
   const { items: coinList = [] } = useRecoilValue(coinListState);
 
   const [isValidating, setIsValidating] = useState(false);
+  const [error, setError] = useState<any>();
 
   const coin = useMemo(() => {
     // const aptosCoin = coinList.find(
@@ -33,22 +34,27 @@ function useCoinBalance(coinType?: string, refreshInterval?: number) {
     if (!coinType || !connected) {
       setBalance(undefined);
       setDisplayed(undefined);
+      setError(undefined);
       return;
     }
-    setIsValidating(true);
-    const typeTag = `0x1::coin::CoinStore<${coinType}>`;
-    const accountResource = await aptosClient.getAccountResource(
-      walletAddress!,
-      typeTag
-    );
-    // const accountResource = resources.find((r) => r.type === typeTag);
-    if (accountResource) {
-      const value = (accountResource!.data as any).coin.value;
-      // const displayed = (value / Math.pow(10, coin?.decimals)).toString();
+    try {
+      setIsValidating(true);
+      const typeTag = `0x1::coin::CoinStore<${coinType}>`;
+      const accountResource = await aptosClient.getAccountResource(
+        walletAddress!,
+        typeTag
+      );
+      // const accountResource = resources.find((r) => r.type === typeTag);
+      if (accountResource) {
+        const value = (accountResource!.data as any).coin.value;
+        // const displayed = (value / Math.pow(10, coin?.decimals)).toString();
 
-      const displayed = formatFixed(BigNumber.from(value), coin?.decimals);
-      setBalance(value);
-      setDisplayed(displayed);
+        const displayed = formatFixed(BigNumber.from(value), coin?.decimals);
+        setBalance(value);
+        setDisplayed(displayed);
+      }
+    } catch (error) {
+      setError(error);
     }
     setIsValidating(false);
   }, [
@@ -59,21 +65,6 @@ function useCoinBalance(coinType?: string, refreshInterval?: number) {
     walletAddress,
   ]);
 
-  // useEffect(() => {
-  //   if (connected && activeWallet?.toString) {
-  //     checkBalance();
-  //   } else {
-  //     setBalance(undefined);
-  //     setDisplayed(undefined);
-  //   }
-  // }, [
-  //   activeWallet,
-  //   aptosClient,
-  //   checkBalance,
-  //   coinType,
-  //   connected,
-  //   walletAddress,
-  // ]);
   useEffect(() => {
     setBalance(undefined);
     setDisplayed(undefined);
@@ -89,8 +80,9 @@ function useCoinBalance(coinType?: string, refreshInterval?: number) {
       displayed,
       checkBalance,
       isValidating,
+      error,
     };
-  }, [balance, checkBalance, displayed, isValidating]);
+  }, [balance, checkBalance, displayed, error, isValidating]);
 }
 
 export default useCoinBalance;
