@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
+    "@ethersproject/constants": "^5.7.0",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",
     "@manahippo/aptos-wallet-adapter": "1.0.2",
