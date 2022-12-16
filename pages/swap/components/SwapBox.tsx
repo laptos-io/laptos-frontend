@@ -1,6 +1,5 @@
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { formatFixed } from "@ethersproject/bignumber";
 import { useWallet } from "@manahippo/aptos-wallet-adapter";
-import { Types } from "aptos";
 import { PendingTransaction } from "aptos/src/generated";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -10,10 +9,11 @@ import SelectCoinDialog from "@/components/Dialogs/SelectCoinDialog";
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import useAptosClient from "@/hooks/useAptosClient";
 import useAptosWallet from "@/hooks/useAptosWallet";
+import useBestTrade from "@/hooks/useBestTrade";
 import useCheckExistedPool from "@/hooks/useCheckExistedPool";
 import useCoinBalance from "@/hooks/useCoinBalance";
+import useTokenInput from "@/hooks/useTokenInput";
 import { getErrMsg } from "@/lib/error";
-import { coinListState } from "@/recoil/coinList";
 import { networkState } from "@/recoil/network";
 import { ICoinInfo } from "@/types/misc";
 
@@ -37,6 +37,8 @@ enum TokenPosition {
 const SwapBox = () => {
   const { network } = useRecoilValue(networkState);
 
+  const { account, signAndSubmitTransaction } = useWallet();
+
   const aptosClient = useAptosClient();
 
   const [xCoin, setXCoin] = useState<ICoinInfo>();
@@ -45,8 +47,21 @@ const SwapBox = () => {
   const [xCoinInput, setXCoinInput] = useState<string>();
   const [yCoinInput, setYCoinInput] = useState<string>();
 
-  const [xAmount, setXAmount] = useState<string>("100000");
-  const [yAmount, setYAmount] = useState<string>("10000000");
+  const {
+    balance: xCoinBalance,
+    balanceDisplayed: xCoinBalanceDisplayed,
+    inputAmount: xAmount,
+    isLoading: isGettingXCoinBalance,
+    error: xCoinInputError,
+  } = useTokenInput(xCoin, xCoinInput);
+
+  const {
+    balance: yCoinBalance,
+    balanceDisplayed: yCoinBalanceDisplayed,
+    inputAmount: yAmount,
+    isLoading: isGettingYCoinBalance,
+    error: yCoinInputError,
+  } = useTokenInput(yCoin, yCoinInput);
 
   const [isSelectCoinDialogOpen, setIsSelectCoinDialogOpen] = useState(false);
   const [tokenPosition, setTokenPosition] = useState<TokenPosition>();
@@ -95,7 +110,6 @@ const SwapBox = () => {
   }, [isExistedThisPool]);
 
   const { connected, activeWallet, openModal } = useAptosWallet();
-  const { signAndSubmitTransaction } = useWallet();
 
   const disableSubmit = useMemo(() => {
     return Boolean(
@@ -105,18 +119,22 @@ const SwapBox = () => {
         xCoin.token_type.type === yCoin.token_type.type ||
         !isValidPool
     );
-  }, [activeWallet, isValidPool, xAmount, xCoin, yAmount, yCoin]);
+  }, [activeWallet, isValidPool, xCoin, yCoin]);
 
-  console.log(12_345, {
-    activeWallet,
-    xCoin,
-    yCoin,
-    isValidPool,
-  });
+  const bestTrade = useBestTrade(xCoin, yCoin, xAmount);
 
-  const addLiquidityPayload = useMemo(() => {
-    if (disableSubmit) return;
-    const args = [xAmount, "0", `0`, "0"];
+  useEffect(() => {
+    setYCoinInput(
+      bestTrade?.outputAmount && yCoin?.decimals
+        ? formatFixed(bestTrade?.outputAmount, yCoin?.decimals)
+        : undefined
+    );
+  }, [bestTrade?.outputAmount, yCoin?.decimals]);
+
+  const transactionPayload = useMemo(() => {
+    if (disableSubmit || !xAmount || !bestTrade) return undefined;
+    console.log(xAmount, bestTrade.outputAmount);
+    const args = [xAmount, "0", bestTrade.outputAmount, "0"];
     const payload: Types.TransactionPayload_EntryFunctionPayload = {
       type: "entry_function_payload",
       function: `${FT_SWAP_ADDRESSES[network]}::LinearScripts::swap_script`,
@@ -124,7 +142,7 @@ const SwapBox = () => {
       arguments: args,
     };
     return payload;
-  }, [disableSubmit, network, xAmount, xCoin, yCoin]);
+  }, [bestTrade, disableSubmit, network, xAmount, xCoin, yCoin]);
 
   useEffect(() => {
     const errMsg = getErrMsg(error);
@@ -136,11 +154,11 @@ const SwapBox = () => {
   }, [error, pending, pendingTx]);
 
   const onSwap = useCallback(async () => {
-    if (disableSubmit || !addLiquidityPayload) return;
+    if (disableSubmit || !transactionPayload) return;
 
     try {
       setPending(true);
-      const pendingTx = await signAndSubmitTransaction(addLiquidityPayload);
+      const pendingTx = await signAndSubmitTransaction(transactionPayload);
       console.log("pendingTx", pendingTx);
       setPendingTx(pendingTx as PendingTransaction);
       const txn = await aptosClient.waitForTransactionWithResult(
@@ -155,7 +173,7 @@ const SwapBox = () => {
       setPending(false);
     }
   }, [
-    addLiquidityPayload,
+    transactionPayload,
     aptosClient,
     disableSubmit,
     signAndSubmitTransaction,
@@ -191,7 +209,9 @@ const SwapBox = () => {
         <TokenInputPanel
           token={xCoin}
           inputDisplayed={xCoinInput}
-          onChangeAmount={(val?: string) => setXCoinInput(val)}
+          balanceDisplayed={xCoinBalanceDisplayed}
+          isGettingBalance={isGettingXCoinBalance}
+          onChangeAmount={(val?: string) => setXCoinInput(val || undefined)}
           onSelectToken={(token) => onSelectToken(TokenPosition.X, token)}
         />
 
@@ -225,6 +245,8 @@ const SwapBox = () => {
         <TokenInputPanel
           token={yCoin}
           inputDisplayed={yCoinInput}
+          balanceDisplayed={yCoinBalanceDisplayed}
+          isGettingBalance={isGettingYCoinBalance}
           onChangeAmount={(val?: string) => setYCoinInput(val)}
           onSelectToken={(token) => onSelectToken(TokenPosition.Y, token)}
         />
@@ -252,7 +274,7 @@ const SwapBox = () => {
               </>
             ) : isValidPool ? (
               <>
-                <span>Add Liquidity</span>
+                <span>Swap</span>
                 {pending && (
                   <span
                     className={`inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-white`}

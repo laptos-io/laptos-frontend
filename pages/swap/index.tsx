@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { SignMessagePayload, useWallet } from "@manahippo/aptos-wallet-adapter";
 import { NextPage } from "next";
 import Head from "next/head";

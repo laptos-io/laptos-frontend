@@ -8,6 +8,7 @@ interface Props {
   token?: ICoinInfo;
   inputDisplayed?: string;
   balanceDisplayed?: string;
+  isGettingBalance?: boolean;
   onSelectToken: (token: ICoinInfo) => void;
   onChangeAmount: (value?: string) => void;
 }
@@ -16,6 +17,7 @@ export default function TokenInputPanel({
   token,
   inputDisplayed = "",
   balanceDisplayed,
+  isGettingBalance,
   onSelectToken,
   onChangeAmount,
 }: Props) {
@@ -25,7 +27,11 @@ export default function TokenInputPanel({
       <div className="w-full">
         <div className="flex items-center">
           <WalletIcon className="h-3 w-3" />
-          <span className="ml-1 text-sm">{balanceDisplayed || "0"}</span>
+          {isGettingBalance ? (
+            <span className="ml-1 text-sm">{"Getting balance..."}</span>
+          ) : (
+            <span className="ml-1 text-sm">{balanceDisplayed || "0"}</span>
+          )}
         </div>
         {token ? (
           <div className="relative flex w-full items-center justify-between rounded-2xl border border-border/50 px-3 py-2">
