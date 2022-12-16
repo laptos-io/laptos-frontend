@@ -51,5 +51,7 @@ export interface ITokenPair {
   xCoin?: ICoinInfo;
   yCoin?: ICoinInfo;
   LPToken?: MoveResource;
-  tokenPairMetadata?: TokenPairMetadata;
+  tokenPairMetadata?: {
+    data: TokenPairMetadata;
+  };
 }

@@ -29,3 +29,8 @@ export const ADMIN_ACCOUNT_DATA = {
   publicKey: process.env.NEXT_PUBLIC_ADMIN_PUBLIC_KEY,
   address: process.env.NEXT_PUBLIC_ADMIN_ADDRESS,
 };
+
+export const SWAP_FEE = 3;
+export const SWAP_FEE_BASE = 1000; // 手续费 0.3%
+
+export { Zero as ZERO } from "@ethersproject/constants";
