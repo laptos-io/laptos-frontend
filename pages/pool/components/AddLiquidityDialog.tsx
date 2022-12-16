@@ -45,8 +45,8 @@ const getAnotherAmountByPair = (
   )
     return undefined;
   const { xCoin, yCoin, tokenPairMetadata } = tokenPair;
-  const { balance_x, balance_y } = tokenPairMetadata.data;
-  if (!balance_x || !balance_y) return undefined;
+  const { balance_x, balance_y, k_last } = tokenPairMetadata.data;
+  if (!+balance_x?.value || !+balance_y?.value || !+k_last) return undefined;
   if (tokenPosition === TokenPosition.X) {
     const xAmount = value ? parseFixed(value, xCoin.decimals) : undefined;
     // should return amountY
@@ -100,14 +100,22 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
     (tokenPosition: TokenPosition, value: string | undefined) => {
       if (tokenPosition === TokenPosition.X) {
         setXCoinInput(value);
-        setYCoinInput(
-          getAnotherAmountByPair(tokenPair, TokenPosition.X, value)
+        const parsedPairAnotherTokenValue = getAnotherAmountByPair(
+          tokenPair,
+          TokenPosition.X,
+          value
         );
+        parsedPairAnotherTokenValue &&
+          setYCoinInput(parsedPairAnotherTokenValue);
       } else {
         setYCoinInput(value);
-        setXCoinInput(
-          getAnotherAmountByPair(tokenPair, TokenPosition.Y, value)
+        const parsedPairAnotherTokenValue = getAnotherAmountByPair(
+          tokenPair,
+          TokenPosition.Y,
+          value
         );
+        parsedPairAnotherTokenValue &&
+          setXCoinInput(parsedPairAnotherTokenValue);
       }
     },
     [tokenPair]
