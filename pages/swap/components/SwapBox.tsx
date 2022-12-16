@@ -1,5 +1,6 @@
 import { formatFixed } from "@ethersproject/bignumber";
 import { useWallet } from "@manahippo/aptos-wallet-adapter";
+import { Types } from "aptos";
 import { PendingTransaction } from "aptos/src/generated";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
