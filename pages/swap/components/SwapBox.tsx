@@ -1,4 +1,4 @@
-import { formatFixed } from "@ethersproject/bignumber";
+import { BigNumber, formatFixed } from "@ethersproject/bignumber";
 import { useWallet } from "@manahippo/aptos-wallet-adapter";
 import { Types } from "aptos";
 import { PendingTransaction } from "aptos/src/generated";
@@ -100,17 +100,19 @@ const SwapBox = () => {
   const [pendingTx, setPendingTx] = useState<PendingTransaction>();
   const [error, setError] = useState<unknown>();
 
-  const {
-    data: isExistedThisPool,
-    isValidating: isCheckingExistedPool,
-    error: checkExistedPoolError,
-  } = useCheckExistedPool(xCoin?.token_type?.type, yCoin?.token_type?.type);
+  // const {
+  //   data: isExistedThisPool,
+  //   isValidating: isCheckingExistedPool,
+  //   error: checkExistedPoolError,
+  // } = useCheckExistedPool(xCoin?.token_type?.type, yCoin?.token_type?.type);
 
-  const isValidPool = useMemo(() => {
-    return isExistedThisPool;
-  }, [isExistedThisPool]);
+  // const isValidPool = useMemo(() => {
+  //   return isExistedThisPool;
+  // }, [isExistedThisPool]);
 
   const { connected, activeWallet, openModal } = useAptosWallet();
+
+  const bestTrade = useBestTrade(xCoin, yCoin, xAmount);
 
   const disableSubmit = useMemo(() => {
     return Boolean(
@@ -118,11 +120,9 @@ const SwapBox = () => {
         !xCoin ||
         !yCoin ||
         xCoin.token_type.type === yCoin.token_type.type ||
-        !isValidPool
+        !bestTrade
     );
-  }, [activeWallet, isValidPool, xCoin, yCoin]);
-
-  const bestTrade = useBestTrade(xCoin, yCoin, xAmount);
+  }, [activeWallet, bestTrade, xCoin, yCoin]);
 
   useEffect(() => {
     setYCoinInput(
@@ -134,15 +134,42 @@ const SwapBox = () => {
 
   const transactionPayload = useMemo(() => {
     if (disableSubmit || !xAmount || !bestTrade) return undefined;
-    console.log(xAmount, bestTrade.outputAmount);
-    const args = [xAmount, "0", bestTrade.outputAmount, "0"];
-    const payload: Types.TransactionPayload_EntryFunctionPayload = {
-      type: "entry_function_payload",
-      function: `${FT_SWAP_ADDRESSES[network]}::LinearScripts::swap_script`,
-      type_arguments: [xCoin!.token_type.type, yCoin!.token_type.type],
-      arguments: args,
-    };
-    return payload;
+    if (bestTrade.routes.length === 1) {
+      const args = [xAmount, "0", bestTrade.outputAmount, "0"];
+      const payload: Types.TransactionPayload_EntryFunctionPayload = {
+        type: "entry_function_payload",
+        function: `${FT_SWAP_ADDRESSES[network]}::LinearScripts::swap_script`,
+        type_arguments: [xCoin!.token_type.type, yCoin!.token_type.type],
+        arguments: args,
+      };
+      return payload;
+    } else if (bestTrade.routes.length === 2) {
+      const midCoinType = bestTrade.routes[0].yCoin?.token_type.type;
+      const args = [
+        1, // first_pool_type
+        true, // first_is_x_to_y
+        1, // second_pool_type
+        true, // second_is_y_to_z
+        xAmount,
+        // "0",
+        BigNumber.from(bestTrade.outputAmount)
+          .mul("990")
+          .div("1000")
+          .toString(),
+      ];
+      const payload: Types.TransactionPayload_EntryFunctionPayload = {
+        type: "entry_function_payload",
+        function: `${FT_SWAP_ADDRESSES[network]}::router::two_step_route_script`,
+        type_arguments: [
+          xCoin!.token_type.type,
+          midCoinType!,
+          yCoin!.token_type.type,
+        ],
+        arguments: args,
+      };
+      console.log(bestTrade.outputAmount, payload);
+      return payload;
+    }
   }, [bestTrade, disableSubmit, network, xAmount, xCoin, yCoin]);
 
   useEffect(() => {
@@ -208,13 +235,13 @@ const SwapBox = () => {
           <button
             disabled={disableSubmit || pending}
             className={`flex w-full items-center justify-center space-x-2 rounded-lg px-3 py-2.5 text-center font-semibold transition-colors ${
-              disableSubmit || pending || isCheckingExistedPool
+              disableSubmit || pending
                 ? "cursor-not-allowed bg-bg-disabled text-text-disabled"
                 : "cursor-pointer bg-primary text-white hover:bg-primary-lighter"
             }`}
             onClick={onSwap}
           >
-            {isCheckingExistedPool ? (
+            {false ? (
               <>
                 <span>Checking Pair</span>
                 {pending && (
@@ -223,7 +250,7 @@ const SwapBox = () => {
                   ></span>
                 )}
               </>
-            ) : isValidPool ? (
+            ) : bestTrade ? (
               <>
                 <span>Swap</span>
                 {pending && (
