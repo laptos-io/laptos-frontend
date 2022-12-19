@@ -74,7 +74,10 @@ export default function useAllPairs() {
           tempTokenPairMapping[`${xCoinType},${yCoinType}`] = {};
         }
         tempTokenPairMapping[`${xCoinType},${yCoinType}`].tokenPairMetadata =
-          resource as TokenPairMetadata;
+          resource as {
+            data: TokenPairMetadata;
+            type: string;
+          };
         if (
           coinListMapping[yCoinType] &&
           !tempTokenPairMapping[`${xCoinType},${yCoinType}`].yCoin
