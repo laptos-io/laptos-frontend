@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { ZERO } from "@/constants/misc";
+import { SWAP_FEE, SWAP_FEE_BASE, ZERO } from "@/constants/misc";
 import { ITokenPair } from "@/types/aptos";
 
 const calculateOutputAmount = (
@@ -11,12 +11,22 @@ const calculateOutputAmount = (
 ) => {
   // lastK = balanceX * balanceY = (balanceX + deltaX) * (balanceY - deltaY)
   // deltaY = balanceY - lastK / (balanceX + deltaX)
-  return BigNumber.from(balanceY).sub(
-    BigNumber.from(lastK).div(
-      BigNumber.from(balanceX).add(BigNumber.from(deltaX))
-    )
+
+  // return BigNumber.from(balanceY).sub(
+  //   BigNumber.from(lastK).div(
+  //     BigNumber.from(balanceX).add(BigNumber.from(deltaX))
+  //   )
+  // );
+  const amountInWithFee = BigNumber.from(deltaX).mul(
+    BigNumber.from(`${SWAP_FEE_BASE - SWAP_FEE}`)
   );
+  const numerator = amountInWithFee.mul(BigNumber.from(balanceY));
+  const denominator = BigNumber.from(balanceX)
+    .mul(BigNumber.from(SWAP_FEE_BASE))
+    .add(amountInWithFee);
+  return numerator.div(denominator);
 };
+
 export const getOutputAmount = (tokenPair: ITokenPair, inputAmount: string) => {
   if (!tokenPair) return;
   if (!+inputAmount || BigNumber.from(inputAmount).lte(ZERO)) return;

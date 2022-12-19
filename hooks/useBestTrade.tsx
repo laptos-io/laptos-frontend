@@ -118,11 +118,14 @@ function useAllRoutes(
 }
 
 const getInputAmountWithFee = (inputAmount: string | undefined) => {
-  return BigNumber.from(inputAmount)
-    .mul(BigNumber.from(`${SWAP_FEE_BASE - SWAP_FEE}`))
-    .div(BigNumber.from(SWAP_FEE_BASE))
-    .toString();
+  return (
+    BigNumber.from(inputAmount)
+      // .mul(BigNumber.from(`${SWAP_FEE_BASE - SWAP_FEE}`))
+      // .div(BigNumber.from(SWAP_FEE_BASE))
+      .toString()
+  );
 };
+
 export default function useBestTrade(
   inputToken?: ICoinInfo,
   outputToken?: ICoinInfo,
@@ -135,7 +138,8 @@ export default function useBestTrade(
       ? getBestTrade(
           [],
           inputToken,
-          getInputAmountWithFee(inputAmount),
+          inputAmount,
+          // getInputAmountWithFee(inputAmount),
           outputToken,
           allPairs,
           3
