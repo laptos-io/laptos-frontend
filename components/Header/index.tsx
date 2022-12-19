@@ -6,7 +6,7 @@ import SearchBox from "./SearchBox";
 
 export default function Header() {
   return (
-    <header className="fixed inset-x-0 top-0 z-20 flex h-20 items-center justify-between px-8 py-0 shadow">
+    <header className="fixed inset-x-0 top-0 z-20 flex h-20 items-center justify-between bg-white px-8 py-0 shadow">
       <div className="inline-flex items-center justify-start space-x-3">
         <Link href="/">
           <Image width={120} height={40} src="/logo-full.svg" alt="logo" />
