@@ -13,6 +13,7 @@ import { useMemo } from "react";
 import toast from "react-hot-toast";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { getErrMsg } from "@/lib/error";
 
 const isDevelopmentMode = process.env.NODE_ENV === "development";
 
@@ -43,8 +44,9 @@ const Providers: React.FC<TProps> = (props: TProps) => {
           let text = "Unknow error";
           if (error.name === "WalletNotReadyError") {
             text = "Wallet not ready";
+            toast.error(text);
           }
-          toast.error(error.message || text);
+          // toast.error(getErrMsg(error) || text);
         }}
       >
         <AptosWalletProvider>{props.children}</AptosWalletProvider>

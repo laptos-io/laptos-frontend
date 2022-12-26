@@ -23,14 +23,14 @@ function getBestTrade(
   | undefined {
   if (currentRoutes?.length > 3 || maxHops === 0) return;
 
-  console.log(
-    currentRoutes,
-    inputToken?.token_type?.type,
-    targetOutputToken.token_type.type,
-    inputToken?.token_type?.type === targetOutputToken.token_type.type,
-    inputAmount,
-    maxHops
-  );
+  // console.log(
+  //   currentRoutes,
+  //   inputToken?.token_type?.type,
+  //   targetOutputToken.token_type.type,
+  //   inputToken?.token_type?.type === targetOutputToken.token_type.type,
+  //   inputAmount,
+  //   maxHops
+  // );
   if (
     inputToken?.token_type?.type &&
     inputToken?.token_type?.type === targetOutputToken.token_type.type
