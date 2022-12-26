@@ -8,6 +8,7 @@ import useAptosWallet from "@/hooks/useAptosWallet";
 import classNames from "@/lib/classNames";
 
 import AllPools from "./components/AllPools";
+import PersonalPools from "./components/PersonalPools";
 
 enum PoolTab {
   All,
@@ -61,7 +62,7 @@ const PoolPage: NextPage = () => {
               ))}
             </nav>
           </div>
-          {activeTab === PoolTab.All ? <AllPools /> : null}
+          {activeTab === PoolTab.All ? <AllPools /> : <PersonalPools />}
         </div>
       </div>
     </>
