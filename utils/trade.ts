@@ -27,6 +27,28 @@ const calculateOutputAmount = (
   return numerator.div(denominator);
 };
 
+const calculateInputAmount = (
+  balanceX: string,
+  balanceY: string,
+  lastK: string,
+  deltaY: string
+) => {
+  // lastK = balanceX * balanceY = (balanceX + deltaX) * (balanceY - deltaY)
+  // deltaY = balanceY - lastK / (balanceX + deltaX)
+  // return BigNumber.from(balanceY).sub(
+  //   BigNumber.from(lastK).div(
+  //     BigNumber.from(balanceX).add(BigNumber.from(deltaX))
+  //   )
+  // );
+  const numerator = BigNumber.from(deltaY)
+    .mul(BigNumber.from(SWAP_FEE_BASE))
+    .mul(BigNumber.from(balanceX));
+  const denominator = BigNumber.from(balanceY)
+    .sub(BigNumber.from(deltaY))
+    .mul(BigNumber.from(SWAP_FEE_BASE - SWAP_FEE));
+  return numerator.div(denominator);
+};
+
 export const getOutputAmount = (tokenPair: ITokenPair, inputAmount: string) => {
   if (!tokenPair) return;
   if (!+inputAmount || BigNumber.from(inputAmount).lte(ZERO)) return;
@@ -39,6 +61,29 @@ export const getOutputAmount = (tokenPair: ITokenPair, inputAmount: string) => {
     balanceY,
     lastK,
     inputAmount
+  );
+  if (expectedOutputAmount.gt(BigNumber.from(balanceY))) {
+    console.log("流动性不足");
+    return;
+  }
+  return expectedOutputAmount.toString();
+};
+
+export const getInputAmountByOutput = (
+  tokenPair: ITokenPair,
+  outputAmount: string
+) => {
+  if (!tokenPair) return;
+  if (!+outputAmount || BigNumber.from(outputAmount).lte(ZERO)) return;
+  const lastK = tokenPair.tokenPairMetadata?.data.k_last;
+  const balanceX = tokenPair.tokenPairMetadata?.data.balance_x.value;
+  const balanceY = tokenPair.tokenPairMetadata?.data.balance_y.value;
+  if (!lastK || !balanceY || !balanceX) return;
+  const expectedOutputAmount: BigNumber = calculateInputAmount(
+    balanceX,
+    balanceY,
+    lastK,
+    outputAmount
   );
   if (expectedOutputAmount.gt(BigNumber.from(balanceY))) {
     console.log("流动性不足");

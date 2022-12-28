@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { useMemo } from "react";
-import { getOutputAmount } from "utils/trade";
+import { getInputAmountByOutput, getOutputAmount } from "utils/trade";
 
 import { SWAP_FEE, SWAP_FEE_BASE } from "@/constants/misc";
 import { ITokenPair } from "@/types/aptos";
@@ -10,15 +10,17 @@ import useAllPairs from "./useAllPairs";
 
 function getBestTrade(
   currentRoutes: ITokenPair[],
-  inputToken: ICoinInfo,
   inputAmount: string,
+  inputToken: ICoinInfo,
+  currentInputAmount: string,
   targetOutputToken: ICoinInfo,
   restTokenPairs: ITokenPair[],
   maxHops: number
 ):
   | {
       routes: ITokenPair[];
-      outputAmount?: string;
+      inputAmount: string;
+      outputAmount: string;
     }
   | undefined {
   if (currentRoutes?.length > 3 || maxHops === 0) return;
@@ -28,7 +30,7 @@ function getBestTrade(
   //   inputToken?.token_type?.type,
   //   targetOutputToken.token_type.type,
   //   inputToken?.token_type?.type === targetOutputToken.token_type.type,
-  //   inputAmount,
+  //   currentInputAmount,
   //   maxHops
   // );
   if (
@@ -38,20 +40,22 @@ function getBestTrade(
     // 当前 pair 就是
     return {
       routes: currentRoutes,
-      outputAmount: inputAmount,
+      inputAmount,
+      outputAmount: currentInputAmount,
     };
   }
   let bestOutput:
     | {
         routes: ITokenPair[];
-        outputAmount?: string;
+        inputAmount: string;
+        outputAmount: string;
       }
     | undefined;
   for (let index = 0; index < restTokenPairs.length; index++) {
     const currentPair = restTokenPairs[index];
     if (currentPair.xCoin?.token_type.type === inputToken.token_type.type) {
       // 当前 pair 是以 inputToken 开头
-      const nextInputAmount = getOutputAmount(currentPair, inputAmount);
+      const nextInputAmount = getOutputAmount(currentPair, currentInputAmount);
       if (nextInputAmount) {
         const nextCurrentRoutes = [...(currentRoutes || []), currentPair];
         const nextInputToken = currentPair.yCoin!;
@@ -61,6 +65,7 @@ function getBestTrade(
         ];
         const _bestOutput = getBestTrade(
           nextCurrentRoutes,
+          inputAmount,
           nextInputToken,
           nextInputAmount,
           targetOutputToken,
@@ -72,6 +77,82 @@ function getBestTrade(
           (_bestOutput?.outputAmount &&
             BigNumber.from(bestOutput.outputAmount).lt(
               BigNumber.from(_bestOutput?.outputAmount)
+            ))
+        ) {
+          bestOutput = _bestOutput;
+        }
+      }
+    }
+  }
+  return bestOutput;
+}
+
+function getBestTradeByOutput(
+  currentRoutes: ITokenPair[],
+  outputAmount: string,
+  currentOutputToken: ICoinInfo,
+  currentOutputAmount: string,
+  targetInputToken: ICoinInfo,
+  restTokenPairs: ITokenPair[],
+  maxHops: number
+):
+  | {
+      routes: ITokenPair[];
+      inputAmount: string;
+      outputAmount: string;
+    }
+  | undefined {
+  if (currentRoutes?.length > 3 || maxHops === 0) return;
+
+  if (
+    currentOutputToken?.token_type?.type &&
+    currentOutputToken?.token_type?.type === targetInputToken.token_type.type
+  ) {
+    // 当前 pair 就是
+    return {
+      routes: currentRoutes,
+      inputAmount: currentOutputAmount,
+      outputAmount,
+    };
+  }
+  let bestOutput:
+    | {
+        routes: ITokenPair[];
+        inputAmount: string;
+        outputAmount: string;
+      }
+    | undefined;
+  for (let index = 0; index < restTokenPairs.length; index++) {
+    const currentPair = restTokenPairs[index];
+    if (
+      currentPair.yCoin?.token_type.type === currentOutputToken.token_type.type
+    ) {
+      // 当前 pair 是以 inputToken 开头
+      const nextOutputAmount = getInputAmountByOutput(
+        currentPair,
+        currentOutputAmount
+      );
+      if (nextOutputAmount) {
+        const nextCurrentRoutes = [currentPair, ...(currentRoutes || [])];
+        const nextOutputToken = currentPair.xCoin!;
+        const nextRestTokenPairs = [
+          ...restTokenPairs.slice(0, index),
+          ...restTokenPairs.slice(index + 1, restTokenPairs.length),
+        ];
+        const _bestOutput = getBestTradeByOutput(
+          nextCurrentRoutes,
+          outputAmount,
+          nextOutputToken,
+          nextOutputAmount,
+          targetInputToken,
+          nextRestTokenPairs,
+          maxHops - 1
+        );
+        if (
+          !bestOutput ||
+          (_bestOutput?.inputAmount &&
+            BigNumber.from(bestOutput.inputAmount).gt(
+              BigNumber.from(_bestOutput?.inputAmount)
             ))
         ) {
           bestOutput = _bestOutput;
@@ -127,24 +208,42 @@ const getInputAmountWithFee = (inputAmount: string | undefined) => {
 };
 
 export default function useBestTrade(
-  inputToken?: ICoinInfo,
-  outputToken?: ICoinInfo,
-  inputAmount?: string,
+  inputToken: ICoinInfo | undefined,
+  outputToken: ICoinInfo | undefined,
+  inputAmount: string | undefined,
+  outputAmount: string | undefined,
+  isExactIn: boolean,
   slippage?: number
-) {
+):
+  | {
+      routes: ITokenPair[];
+      inputAmount: string;
+      outputAmount: string;
+    }
+  | undefined {
   const allPairs = useAllPairs();
-  const bestTrade =
-    inputToken && inputAmount && outputToken && allPairs
+  const bestTrade = isExactIn
+    ? inputToken && inputAmount && outputToken && allPairs
       ? getBestTrade(
           [],
+          inputAmount,
           inputToken,
           inputAmount,
-          // getInputAmountWithFee(inputAmount),
           outputToken,
           allPairs,
           3
         )
-      : undefined;
-  // console.log("@@@ bestTrade", bestTrade);
+      : undefined
+    : inputToken && outputAmount && outputToken && allPairs
+    ? getBestTradeByOutput(
+        [],
+        outputAmount,
+        outputToken,
+        outputAmount,
+        inputToken,
+        allPairs,
+        3
+      )
+    : undefined;
   return bestTrade;
 }

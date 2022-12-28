@@ -5,6 +5,11 @@ import { ICoinInfo } from "./misc";
 
 export type SwapExecutionPrice = BigNumber;
 
+export enum TradeType {
+  EXACT_INPUT,
+  EXACT_OUTPUT,
+}
+
 export enum TradeState {
   UNKNOWN,
   LOADING,

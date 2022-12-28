@@ -11,7 +11,6 @@ import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import useAptosClient from "@/hooks/useAptosClient";
 import useAptosWallet from "@/hooks/useAptosWallet";
 import useBestTrade from "@/hooks/useBestTrade";
-import useCheckExistedPool from "@/hooks/useCheckExistedPool";
 import useCoinBalance from "@/hooks/useCoinBalance";
 import useTokenInput from "@/hooks/useTokenInput";
 import { getErrMsg } from "@/lib/error";
@@ -41,6 +40,8 @@ const SwapBox = () => {
   const { account, signAndSubmitTransaction } = useWallet();
 
   const aptosClient = useAptosClient();
+
+  const [isExactIn, setIsExactIn] = useState(true);
 
   const [xCoin, setXCoin] = useState<ICoinInfo>();
   const [yCoin, setYCoin] = useState<ICoinInfo>();
@@ -112,7 +113,14 @@ const SwapBox = () => {
 
   const { connected, activeWallet, openModal } = useAptosWallet();
 
-  const bestTrade = useBestTrade(xCoin, yCoin, xAmount);
+  const bestTrade = useBestTrade(
+    xCoin,
+    yCoin,
+    isExactIn ? xAmount : undefined,
+    isExactIn ? undefined : yAmount,
+    isExactIn,
+    undefined
+  );
 
   const disableSubmit = useMemo(() => {
     return Boolean(
@@ -125,12 +133,20 @@ const SwapBox = () => {
   }, [activeWallet, bestTrade, xCoin, yCoin]);
 
   useEffect(() => {
-    setYCoinInput(
-      bestTrade?.outputAmount && yCoin?.decimals
-        ? formatFixed(bestTrade?.outputAmount, yCoin?.decimals)
-        : undefined
-    );
-  }, [bestTrade?.outputAmount, yCoin?.decimals]);
+    if (isExactIn) {
+      setYCoinInput(
+        bestTrade?.outputAmount && yCoin?.decimals
+          ? formatFixed(bestTrade?.outputAmount, yCoin?.decimals)
+          : undefined
+      );
+    } else {
+      setXCoinInput(
+        bestTrade?.inputAmount && xCoin?.decimals
+          ? formatFixed(bestTrade?.inputAmount, xCoin?.decimals)
+          : undefined
+      );
+    }
+  }, [bestTrade, isExactIn, xCoin?.decimals, yCoin?.decimals]);
 
   const transactionPayload = useMemo(() => {
     if (disableSubmit || !xAmount || !bestTrade) return undefined;
@@ -167,7 +183,6 @@ const SwapBox = () => {
         ],
         arguments: args,
       };
-      console.log(bestTrade.outputAmount, payload);
       return payload;
     }
   }, [bestTrade, disableSubmit, network, xAmount, xCoin, yCoin]);
@@ -214,7 +229,10 @@ const SwapBox = () => {
           inputDisplayed={xCoinInput}
           balanceDisplayed={xCoinBalanceDisplayed}
           isGettingBalance={isGettingXCoinBalance}
-          onChangeAmount={(val?: string) => setXCoinInput(val || undefined)}
+          onChangeAmount={(val?: string) => {
+            setXCoinInput(val || undefined);
+            setIsExactIn(true);
+          }}
           onSelectToken={(token) => onSelectToken(TokenPosition.X, token)}
         />
 
@@ -225,7 +243,10 @@ const SwapBox = () => {
           inputDisplayed={yCoinInput}
           balanceDisplayed={yCoinBalanceDisplayed}
           isGettingBalance={isGettingYCoinBalance}
-          onChangeAmount={(val?: string) => setYCoinInput(val)}
+          onChangeAmount={(val?: string) => {
+            setYCoinInput(val);
+            setIsExactIn(false);
+          }}
           onSelectToken={(token) => onSelectToken(TokenPosition.Y, token)}
         />
 
