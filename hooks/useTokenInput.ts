@@ -23,6 +23,7 @@ export default function useTokenInput(
     if (!token) return undefined;
     if (
       typeof inputDisplayed !== "undefined" &&
+      inputDisplayed !== "" &&
       typeof +inputDisplayed === "number"
     ) {
       try {
