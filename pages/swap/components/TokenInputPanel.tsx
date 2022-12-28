@@ -1,3 +1,4 @@
+import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
 import { ChevronDownIcon, WalletIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
@@ -6,6 +7,7 @@ import { ICoinInfo } from "@/types/misc";
 
 interface Props {
   token?: ICoinInfo;
+  enableQuickInput: boolean;
   inputDisplayed?: string;
   balanceDisplayed?: string;
   isGettingBalance?: boolean;
@@ -16,6 +18,7 @@ interface Props {
 
 export default function TokenInputPanel({
   token,
+  enableQuickInput,
   inputDisplayed = "",
   balanceDisplayed,
   isGettingBalance,
@@ -27,12 +30,39 @@ export default function TokenInputPanel({
   return (
     <>
       <div className="w-full">
-        <div className="flex items-center">
+        <div className="relative flex items-center">
           <WalletIcon className="h-3 w-3" />
           {isGettingBalance ? (
             <span className="ml-1 text-sm">{"Getting balance..."}</span>
           ) : (
             <span className="ml-1 text-sm">{balanceDisplayed || "0"}</span>
+          )}
+          {enableQuickInput && balanceDisplayed && token && (
+            <div className="absolute right-0 top-0 inline-flex items-center justify-center space-x-2">
+              <button
+                className="text-xs font-semibold text-slate-500 hover:text-primary"
+                type="button"
+                onClick={() =>
+                  onChangeAmount(
+                    formatFixed(
+                      parseFixed(balanceDisplayed, token.decimals).div(
+                        BigNumber.from("2")
+                      ),
+                      token.decimals
+                    )
+                  )
+                }
+              >
+                HALF
+              </button>
+              <button
+                className="text-xs font-semibold text-slate-500 hover:text-primary"
+                type="button"
+                onClick={() => onChangeAmount(balanceDisplayed)}
+              >
+                MAX
+              </button>
+            </div>
           )}
         </div>
         {token ? (

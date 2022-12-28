@@ -209,6 +209,7 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
         <div className="w-full pt-5">
           <TokenInputPanel
             token={xCoin}
+            enableQuickInput
             inputDisplayed={xCoinInput}
             disableSelectToken
             balanceDisplayed={xCoinBalanceDisplayed}
@@ -222,6 +223,7 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
 
           <TokenInputPanel
             token={yCoin}
+            enableQuickInput
             inputDisplayed={yCoinInput}
             disableSelectToken
             balanceDisplayed={yCoinBalanceDisplayed}

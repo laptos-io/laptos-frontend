@@ -226,6 +226,7 @@ const SwapBox = () => {
       <div className="card mx-auto mt-6 w-full max-w-[480px] pt-5">
         <TokenInputPanel
           token={xCoin}
+          enableQuickInput={true}
           inputDisplayed={xCoinInput}
           balanceDisplayed={xCoinBalanceDisplayed}
           isGettingBalance={isGettingXCoinBalance}
@@ -240,6 +241,7 @@ const SwapBox = () => {
 
         <TokenInputPanel
           token={yCoin}
+          enableQuickInput={false}
           inputDisplayed={yCoinInput}
           balanceDisplayed={yCoinBalanceDisplayed}
           isGettingBalance={isGettingYCoinBalance}
