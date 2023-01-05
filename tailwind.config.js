@@ -24,6 +24,11 @@ module.exports = {
       fontFamily: {
         Inter: ["Inter", "sans-serif"],
       },
+      backgroundImage: {
+        "home-left-bottom": "url('/images/home-left-bg.png')",
+        "home-right-bg": "url('/images/home-circirs-bg.png')",
+        "home-right": "url('/images/home-circles.svg')",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms"), require("@tailwindcss/line-clamp")],
