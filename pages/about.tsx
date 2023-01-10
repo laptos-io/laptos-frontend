@@ -26,7 +26,7 @@ const About: NextPage = () => {
           </p>
         </section>
 
-        <section className="min-h-0 w-full bg-about-bg-1 bg-[length:50vh_100vh] bg-right bg-no-repeat py-16">
+        <section className="relative min-h-0 w-full bg-about-bg-1 bg-contain bg-right bg-no-repeat py-16">
           <div className="container mx-auto flex h-full max-w-5xl items-center justify-between px-5 text-center">
             <div className="article max-w-md text-left">
               <div className="text-lg font-bold sm:text-2xl">
@@ -55,7 +55,7 @@ const About: NextPage = () => {
           </div>
         </section>
 
-        <section className="min-h-0 w-full bg-about-bg-2 bg-[length:50vh_100vh] bg-left bg-no-repeat py-16">
+        <section className="relative min-h-0 w-full bg-about-bg-2 bg-contain bg-left bg-no-repeat py-16">
           <div className="container mx-auto h-full max-w-5xl items-center justify-between px-5 text-center sm:flex sm:flex-row-reverse">
             <div className="article max-w-md text-left">
               <div className="text-lg font-bold sm:text-2xl">
@@ -91,6 +91,58 @@ const About: NextPage = () => {
             </div>
           </div>
         </section>
+        <footer className="mt-12 flex items-center justify-center space-x-3 py-6">
+          <a
+            href=""
+            className="inline-block hover:opacity-70"
+            target={"_blank"}
+          >
+            <span className="relative inline-block h-10 w-10">
+              <Image
+                src={"/images/icon-twitter.svg"}
+                width={40}
+                height={40}
+                className="absolute inset-0"
+                alt="twitter"
+                layout="fill"
+              ></Image>
+            </span>
+          </a>
+
+          <a
+            href=""
+            className="inline-block hover:opacity-70"
+            target={"_blank"}
+          >
+            <span className="relative inline-block h-10 w-10">
+              <Image
+                src={"/images/icon-discord.svg"}
+                width={40}
+                height={40}
+                className="absolute inset-0"
+                alt="discord"
+                layout="fill"
+              ></Image>
+            </span>
+          </a>
+
+          <a
+            href=""
+            className="inline-block hover:opacity-70"
+            target={"_blank"}
+          >
+            <span className="relative inline-block h-10 w-10">
+              <Image
+                src={"/images/icon-github.svg"}
+                width={40}
+                height={40}
+                className="absolute inset-0"
+                alt="github"
+                layout="fill"
+              ></Image>
+            </span>
+          </a>
+        </footer>
       </div>
     </>
   );
