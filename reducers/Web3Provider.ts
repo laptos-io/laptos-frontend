@@ -1,3 +1,5 @@
+import { Network } from "@/types/misc";
+
 export type Web3ProviderState = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   provider: any;

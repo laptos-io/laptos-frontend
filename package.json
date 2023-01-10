@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "generate": "next build && next export"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
