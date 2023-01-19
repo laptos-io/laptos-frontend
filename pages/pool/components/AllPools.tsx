@@ -62,7 +62,7 @@ const AllPools = () => {
         <div className="mt-8 flex w-full items-center justify-between space-x-3">
           <SearchBox value={q} onChange={(val = "") => setQ(val)} />
 
-          <button
+          {/* <button
             type="button"
             className="inline-flex items-center space-x-2 text-green-500"
             onClick={() => {
@@ -76,7 +76,7 @@ const AllPools = () => {
               }`}
             ></span>
             <span className="inline-block">Refresh</span>
-          </button>
+          </button> */}
 
           <button
             type="button"
