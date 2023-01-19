@@ -31,11 +31,18 @@ export default function TokenInputPanel({
     <>
       <div className="w-full">
         <div className="relative flex items-center">
-          <WalletIcon className="h-3 w-3" />
-          {isGettingBalance ? (
-            <span className="ml-1 text-sm">{"Getting balance..."}</span>
+          {!token ? (
+            <span className="ml-1 text-sm">&nbsp;</span>
+          ) : isGettingBalance ? (
+            <>
+              <WalletIcon className="h-3 w-3" />
+              <span className="ml-1 text-sm">{"Getting balance..."}</span>
+            </>
           ) : (
-            <span className="ml-1 text-sm">{balanceDisplayed || "0"}</span>
+            <>
+              <WalletIcon className="h-3 w-3" />
+              <span className="ml-1 text-sm">{balanceDisplayed || "0"}</span>
+            </>
           )}
           {enableQuickInput && balanceDisplayed && token && (
             <div className="absolute right-0 top-0 inline-flex items-center justify-center space-x-2">
