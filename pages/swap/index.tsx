@@ -6,6 +6,7 @@ import Head from "next/head";
 import CoinNavTabs from "@/components/CoinNavTabs";
 import useAptosWallet from "@/hooks/useAptosWallet";
 
+import FaucetBox from "./components/FaucetBox";
 import SwapBox from "./components/SwapBox";
 
 const SwapPage: NextPage = () => {
@@ -38,6 +39,7 @@ const SwapPage: NextPage = () => {
         <div className="container mx-auto">
           <CoinNavTabs />
           <SwapBox />
+          <FaucetBox />
         </div>
       </div>
     </>
