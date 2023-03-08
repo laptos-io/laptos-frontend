@@ -32,7 +32,7 @@ const SwapPage: NextPage = () => {
   };
   return (
     <>
-      <div className="min-h-screen py-2 pt-28">
+      <div className="min-h-screen py-2">
         <Head>
           <title>Laptos Swap</title>
         </Head>

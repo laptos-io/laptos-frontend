@@ -17,7 +17,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 const Layout: React.FC<React.PropsWithChildren<{ children: ReactNode }>> = ({
   children,
 }) => {
-  const { query } = useRouter();
+  const { pathname, query } = useRouter();
   const network = useMemo(() => {
     if (!query.network) return Network.Mainnet;
     if (Object.keys(Network).includes(query.network as Network)) {
@@ -57,13 +57,19 @@ const Layout: React.FC<React.PropsWithChildren<{ children: ReactNode }>> = ({
       </div>
     );
   }
+
   return (
     <>
       <Head>
         <title>Laptos</title>
       </Head>
 
-      <div className="w-full" key={networkStateData.network}>
+      <div
+        className={`min-h-screen w-full pt-20 ${
+          /^\/nft\/?/.test(pathname) ? "bg-[#F1F6FF]" : ""
+        }`}
+        key={networkStateData.network}
+      >
         <Header />
         <WalletConnector />
         {children}
