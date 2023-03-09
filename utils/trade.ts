@@ -2,6 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 
 import { SWAP_FEE, SWAP_FEE_BASE, ZERO } from "@/constants/misc";
 import { ITokenPair } from "@/types/aptos";
+import { BondingCurve } from "@/types/nft";
 
 const calculateOutputAmount = (
   balanceX: string,

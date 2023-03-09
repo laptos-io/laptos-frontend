@@ -1,8 +1,20 @@
+import { BigNumber, BigNumberish, parseFixed } from "@ethersproject/bignumber";
 import { useEffect, useState } from "react";
 
+import { ZERO } from "@/constants/misc";
+import { IOwnerCollection } from "@/hooks/useUserNFTs";
 import classNames from "@/lib/classNames";
-import { CreatePoolStep, PoolType } from "@/types/nft";
+import { ICoinInfo } from "@/types/misc";
+import {
+  BondingCurve,
+  CoinAmount,
+  CreatePoolStep,
+  PoolType,
+} from "@/types/nft";
 
+import BuyAndSell from "./components/ConfiguringPoolParameters/BuyAndSell";
+import BuyNFTs from "./components/ConfiguringPoolParameters/BuyNFTs";
+import SellNFTs from "./components/ConfiguringPoolParameters/SellNFTs";
 import SelectAssets from "./components/SelectAssets";
 import SelectPoolType from "./components/SelectPoolType";
 
@@ -20,12 +32,42 @@ export default function CreateNFTPoolPage() {
 
   const [poolType, setPoolType] = useState<PoolType>();
   const [xType, setXType] = useState<string>();
-  const [yType, setYType] = useState<string>();
+  const [xTokenCollection, setXTokenCollection] = useState<IOwnerCollection>();
+
+  const [yCoin, setYCoin] = useState<ICoinInfo>();
+  const yType = yCoin?.token_type?.type;
+
+  const [spotPrice, setSpotPrice] = useState<CoinAmount | undefined>();
+
+  const [bondingCurve, setBondingCurve] = useState<BondingCurve>(
+    BondingCurve.Linear
+  );
+  const [delta, setDelta] = useState<BigNumber>();
+  const [fee, setFee] = useState<BigNumber | undefined>(ZERO);
+
+  useEffect(() => {
+    setDelta(undefined);
+  }, [bondingCurve]);
 
   useEffect(() => {
     typeof poolType !== "undefined" &&
       setCurrentStep(CreatePoolStep.SelectAssets);
   }, [poolType]);
+
+  useEffect(() => {
+    setSpotPrice((prevState) => {
+      return {
+        coin: yCoin,
+        amount:
+          yCoin && prevState?.amount?.displayed
+            ? {
+                displayed: prevState.amount.displayed,
+                value: parseFixed(prevState.amount.displayed, yCoin.decimals),
+              }
+            : undefined,
+      };
+    });
+  }, [yCoin]);
 
   return (
     <div className="h-full w-full">
@@ -113,8 +155,63 @@ export default function CreateNFTPoolPage() {
             xType={xType}
             yType={yType}
             onChangeXtype={setXType}
-            onChangeYtype={setYType}
+            onChangeXTokenCollection={setXTokenCollection}
+            onChangeYtype={setYCoin}
           />
+        </div>
+
+        <div
+          className={classNames(
+            "w-full",
+            currentStep === CreatePoolStep.ConfiguringPoolParameters
+              ? "block"
+              : "hidden"
+          )}
+        >
+          {poolType === PoolType.NFT && (
+            <BuyNFTs
+              fee={fee}
+              xTokenCollection={xTokenCollection}
+              yCoin={yCoin}
+              spotPrice={spotPrice}
+              bondingCurve={bondingCurve}
+              delta={delta}
+              onChangeFee={setFee}
+              onChangeSpotPrice={setSpotPrice}
+              onChangeBondingCurve={setBondingCurve}
+              onChangeDelta={setDelta}
+            />
+          )}
+
+          {poolType === PoolType.Token && (
+            <SellNFTs
+              fee={fee}
+              xTokenCollection={xTokenCollection}
+              yCoin={yCoin}
+              spotPrice={spotPrice}
+              bondingCurve={bondingCurve}
+              delta={delta}
+              onChangeFee={setFee}
+              onChangeSpotPrice={setSpotPrice}
+              onChangeBondingCurve={setBondingCurve}
+              onChangeDelta={setDelta}
+            />
+          )}
+
+          {poolType === PoolType.Trade && (
+            <BuyAndSell
+              fee={fee}
+              xTokenCollection={xTokenCollection}
+              yCoin={yCoin}
+              spotPrice={spotPrice}
+              bondingCurve={bondingCurve}
+              delta={delta}
+              onChangeFee={setFee}
+              onChangeSpotPrice={setSpotPrice}
+              onChangeBondingCurve={setBondingCurve}
+              onChangeDelta={setDelta}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",
     "@manahippo/aptos-wallet-adapter": "1.0.2",
+    "@martiandao/aptos-web3-bip44.js": "^1.2.23",
     "@popperjs/core": "^2.11.6",
     "@solana/web3.js": "^1.66.2",
     "@tailwindcss/aspect-ratio": "^0.4.0",

@@ -106,7 +106,7 @@ export default function CollectionsPage() {
             <a className="text-primary">list your NFTs</a>
           </Link>{" "}
           ，or{" "}
-          <Link href={""} passHref>
+          <Link href={`/nft/pool/create?network=${network}`} passHref>
             <a className="text-primary">
               create a new pool to buy and sell in bulk.
             </a>

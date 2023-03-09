@@ -13,8 +13,8 @@ export default function Header() {
   const { y } = useWindowScroll();
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-20 flex h-20 items-center justify-between px-8 py-0 ${
-        y && y > 80 ? "bg-white shadow" : "bg-transparent"
+      className={`flex fixed inset-x-0 top-0 z-20 h-20 items-center justify-between px-8 py-0 ${
+        y && y > 1 ? "bg-white shadow" : "bg-transparent"
       }`}
     >
       <div className="inline-flex items-center justify-start space-x-3">

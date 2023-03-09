@@ -34,3 +34,6 @@ export const SWAP_FEE = 3;
 export const SWAP_FEE_BASE = 1000; // 手续费 0.3%
 
 export { Zero as ZERO } from "@ethersproject/constants";
+export { MaxUint256 } from "@ethersproject/constants";
+
+export const BASIC_DECIMALS = 8;

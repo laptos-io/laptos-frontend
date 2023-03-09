@@ -1,6 +1,7 @@
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 
+import { IOwnerCollection } from "@/hooks/useUserNFTs";
 import { ICoinInfo } from "@/types/misc";
 import { PoolType } from "@/types/nft";
 
@@ -12,7 +13,8 @@ interface Props {
   xType?: string; // NFT type
   yType?: string; // token type
   onChangeXtype: (value?: string) => void;
-  onChangeYtype: (value?: string) => void;
+  onChangeXTokenCollection: (value?: IOwnerCollection) => void;
+  onChangeYtype: (value?: ICoinInfo) => void;
 }
 
 export default function SelectAssets({
@@ -20,6 +22,7 @@ export default function SelectAssets({
   xType,
   yType,
   onChangeXtype,
+  onChangeXTokenCollection,
   onChangeYtype,
 }: Props) {
   const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
@@ -184,7 +187,7 @@ export default function SelectAssets({
         onDismiss={() => setIsTokenDialogOpen(false)}
         onSelect={(coin) => {
           setSelectedToken(coin);
-          onChangeYtype(coin.token_type.type);
+          onChangeYtype(coin);
           setIsTokenDialogOpen(false);
         }}
       />
@@ -194,6 +197,7 @@ export default function SelectAssets({
         onDismiss={() => setIsNFTDialogOpen(false)}
         onSelect={(collection) => {
           setSelectedCollection(collection);
+          onChangeXTokenCollection(collection);
           // TODO: 确定 NFT type
           // onChangeXtype(collection.token_type.type);
           setIsNFTDialogOpen(false);

@@ -56,7 +56,10 @@ export default function useUserNFTs() {
   const walletAddress = activeWallet?.toString();
 
   const key = url && walletAddress ? { url, walletAddress } : undefined;
-  const { data, ...rest } = useSWR(key, fetcher);
+  const { data, ...rest } = useSWR(key, fetcher, {
+    refreshInterval: 10_000,
+  });
+
   const current_token_ownerships = data?.data
     ?.current_token_ownerships as OwnerTokens;
 
