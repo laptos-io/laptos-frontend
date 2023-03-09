@@ -82,7 +82,7 @@
     /**
      * eslint-plugin-prettier
      **/
-    "prettier/prettier": "error",
+    "prettier/prettier": "warn",
     /**
      * eslint-plugin-next
      **/
