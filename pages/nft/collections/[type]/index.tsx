@@ -50,7 +50,7 @@ export default function NftDetailPage() {
             return (
               <div
                 key={item.tokenId.token_data_id.name}
-                className="card col-span-1 rounded-lg p-2 shadow hover:shadow-xl"
+                className="card col-span-1 rounded-lg px-2 py-3 shadow hover:shadow-xl"
               >
                 <div className="relative mb-3 w-full rounded bg-pink-200 pt-[100%]">
                   {item.image && (
@@ -67,14 +67,16 @@ export default function NftDetailPage() {
                 <div className="mb-1 text-lg font-bold">
                   {item.tokenId.token_data_id.collection}
                 </div>
-                <div className="flex space-x-2 font-semibold text-primary/70">
+                <div className="flex mb-4 space-x-2 font-semibold text-primary/70">
                   {item.price.displayed} APT
                 </div>
                 <Link
                   href={`/nft/collections/BAYC/${item.tokenId.token_data_id.name}`}
-                  className="hover;text-white w-full rounded-lg border border-primary px-3 py-1.5 leading-5 text-primary hover:bg-primary"
+                  passHref
                 >
-                  View Item
+                  <a className="block w-full rounded-lg border border-primary px-3 py-1.5 text-center leading-5 text-primary hover:bg-primary hover:text-white">
+                    View Item
+                  </a>
                 </Link>
               </div>
             );
