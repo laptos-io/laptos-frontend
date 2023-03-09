@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish, parseFixed } from "@ethersproject/bignumber";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ZERO } from "@/constants/misc";
 import { IOwnerCollection } from "@/hooks/useUserNFTs";
@@ -15,6 +15,7 @@ import {
 import BuyAndSell from "./components/ConfiguringPoolParameters/BuyAndSell";
 import BuyNFTs from "./components/ConfiguringPoolParameters/BuyNFTs";
 import SellNFTs from "./components/ConfiguringPoolParameters/SellNFTs";
+import FinalizingDeposit from "./components/FinalizingDeposit";
 import SelectAssets from "./components/SelectAssets";
 import SelectPoolType from "./components/SelectPoolType";
 
@@ -45,9 +46,14 @@ export default function CreateNFTPoolPage() {
   const [delta, setDelta] = useState<BigNumber>();
   const [fee, setFee] = useState<BigNumber | undefined>(ZERO);
 
-  useEffect(() => {
-    setDelta(undefined);
-  }, [bondingCurve]);
+  const [buyCount, setBuyCount] = useState<number>();
+  const [sellCount, setSellCount] = useState<number>();
+  const [buyAmount, setBuyAmount] = useState<BigNumber>();
+  const [sellAmount, setSellAmount] = useState<BigNumber>();
+
+  // useEffect(() => {
+  //   setDelta(undefined);
+  // }, [bondingCurve]);
 
   useEffect(() => {
     typeof poolType !== "undefined" &&
@@ -69,6 +75,9 @@ export default function CreateNFTPoolPage() {
     });
   }, [yCoin]);
 
+  useEffect(() => {
+    console.log(xTokenCollection, yCoin, spotPrice, delta, currentStep);
+  }, [xTokenCollection, delta, spotPrice, yCoin, currentStep]);
   return (
     <div className="h-full w-full">
       <div className="flex w-full flex-col items-center justify-center bg-primary py-[60px] px-10">
@@ -141,6 +150,7 @@ export default function CreateNFTPoolPage() {
             currentStep={currentStep}
             value={poolType}
             onChange={setPoolType}
+            onChangeStep={(value: CreatePoolStep) => setCurrentStep(value)}
           />
         </div>
 
@@ -157,6 +167,7 @@ export default function CreateNFTPoolPage() {
             onChangeXtype={setXType}
             onChangeXTokenCollection={setXTokenCollection}
             onChangeYtype={setYCoin}
+            onChangeStep={(value: CreatePoolStep) => setCurrentStep(value)}
           />
         </div>
 
@@ -180,6 +191,9 @@ export default function CreateNFTPoolPage() {
               onChangeSpotPrice={setSpotPrice}
               onChangeBondingCurve={setBondingCurve}
               onChangeDelta={setDelta}
+              onChangeBuyCount={setBuyCount}
+              onChangeBuyAmount={setBuyAmount}
+              onChangeStep={(value: CreatePoolStep) => setCurrentStep(value)}
             />
           )}
 
@@ -195,6 +209,9 @@ export default function CreateNFTPoolPage() {
               onChangeSpotPrice={setSpotPrice}
               onChangeBondingCurve={setBondingCurve}
               onChangeDelta={setDelta}
+              onChangeSellCount={setSellCount}
+              onChangeSellAmount={setSellAmount}
+              onChangeStep={(value: CreatePoolStep) => setCurrentStep(value)}
             />
           )}
 
@@ -210,6 +227,36 @@ export default function CreateNFTPoolPage() {
               onChangeSpotPrice={setSpotPrice}
               onChangeBondingCurve={setBondingCurve}
               onChangeDelta={setDelta}
+              onChangeBuyCount={setBuyCount}
+              onChangeBuyAmount={setBuyAmount}
+              onChangeSellCount={setSellCount}
+              onChangeSellAmount={setSellAmount}
+              onChangeStep={(value: CreatePoolStep) => setCurrentStep(value)}
+            />
+          )}
+        </div>
+
+        <div
+          className={classNames(
+            "w-full",
+            currentStep === CreatePoolStep.FinalizingDeposit
+              ? "block"
+              : "hidden"
+          )}
+        >
+          {xTokenCollection && yCoin && spotPrice && delta && (
+            <FinalizingDeposit
+              fee={fee}
+              xTokenCollection={xTokenCollection}
+              yCoin={yCoin}
+              spotPrice={spotPrice}
+              bondingCurve={bondingCurve}
+              delta={delta}
+              buyCount={buyCount}
+              buyAmount={buyAmount}
+              sellCount={sellCount}
+              sellAmount={sellAmount}
+              onChangeStep={(value: CreatePoolStep) => setCurrentStep(value)}
             />
           )}
         </div>

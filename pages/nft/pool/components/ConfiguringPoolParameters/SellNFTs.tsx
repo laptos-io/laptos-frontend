@@ -5,7 +5,12 @@ import { BASIC_DECIMALS } from "@/constants/misc";
 import { usePoolPricing } from "@/hooks/usePoolPricing";
 import { IOwnerCollection } from "@/hooks/useUserNFTs";
 import { ICoinInfo } from "@/types/misc";
-import { BondingCurve, CoinAmount, PoolType } from "@/types/nft";
+import {
+  BondingCurve,
+  CoinAmount,
+  CreatePoolStep,
+  PoolType,
+} from "@/types/nft";
 
 import SelectBondingCurve from "../SelectBondingCurve";
 
@@ -20,6 +25,9 @@ interface Props {
   onChangeFee: (value?: BigNumber) => void;
   onChangeSpotPrice: (value?: CoinAmount) => void;
   onChangeDelta: (value?: BigNumber) => void;
+  onChangeSellCount: (value?: number) => void;
+  onChangeSellAmount: (value?: BigNumber) => void;
+  onChangeStep: (value: CreatePoolStep) => void;
 }
 
 export default function BuyNFTs({
@@ -33,6 +41,9 @@ export default function BuyNFTs({
   onChangeFee,
   onChangeSpotPrice,
   onChangeDelta,
+  onChangeSellCount,
+  onChangeSellAmount,
+  onChangeStep,
 }: Props) {
   const [buyPoolWantSell, setBuyPoolWantSell] = useState<number>();
   const [sellCount, setSellCount] = useState<number>();
@@ -126,7 +137,7 @@ export default function BuyNFTs({
               </div>
             </div>
 
-            <div className="w-full">
+            <div className="w-full" key={bondingCurve}>
               <label
                 htmlFor="delta"
                 className="block text-sm font-medium leading-6 text-[#6B7196]"
@@ -144,7 +155,12 @@ export default function BuyNFTs({
                   onChange={(e) =>
                     onChangeDelta(
                       +e.target.value
-                        ? parseFixed(e.target.value, BASIC_DECIMALS)
+                        ? bondingCurve === BondingCurve.Exponential
+                          ? parseFixed(
+                              (+e.target.value / 100).toString(),
+                              BASIC_DECIMALS
+                            )
+                          : parseFixed(e.target.value, BASIC_DECIMALS)
                         : undefined
                     )
                   }

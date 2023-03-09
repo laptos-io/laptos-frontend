@@ -1,11 +1,16 @@
 import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { BASIC_DECIMALS, ZERO } from "@/constants/misc";
 import { usePoolPricing } from "@/hooks/usePoolPricing";
 import { IOwnerCollection } from "@/hooks/useUserNFTs";
 import { ICoinInfo } from "@/types/misc";
-import { BondingCurve, CoinAmount, PoolType } from "@/types/nft";
+import {
+  BondingCurve,
+  CoinAmount,
+  CreatePoolStep,
+  PoolType,
+} from "@/types/nft";
 
 import SelectBondingCurve from "../SelectBondingCurve";
 
@@ -20,19 +25,23 @@ interface Props {
   onChangeFee: (value?: BigNumber) => void;
   onChangeSpotPrice: (value?: CoinAmount) => void;
   onChangeDelta: (value?: BigNumber) => void;
+  onChangeBuyCount: (value?: number) => void;
+  onChangeBuyAmount: (value?: BigNumber) => void;
+  onChangeStep: (value: CreatePoolStep) => void;
 }
 
 export default function BuyNFTs({
   bondingCurve,
-  fee,
   xTokenCollection,
   yCoin,
   spotPrice,
   delta,
   onChangeBondingCurve,
-  onChangeFee,
   onChangeSpotPrice,
   onChangeDelta,
+  onChangeBuyCount,
+  onChangeBuyAmount,
+  onChangeStep,
 }: Props) {
   const [buyPoolWantBuy, setBuyPoolWantBuy] = useState<number>();
   const [buyCount, setBuyCount] = useState<number>();
@@ -52,6 +61,9 @@ export default function BuyNFTs({
     count: buyCount || 0,
   });
 
+  useEffect(() => {
+    onChangeBuyAmount(buyAmount);
+  }, [buyAmount, onChangeBuyAmount]);
   const isInvalidAmount = wantBuyAmount?.lte(ZERO);
 
   const deltaDisplayed = useMemo(() => {
@@ -61,6 +73,7 @@ export default function BuyNFTs({
       return delta ? +formatFixed(delta, BASIC_DECIMALS).toString() : undefined;
     }
   }, [bondingCurve, delta]);
+
   if (typeof bondingCurve === "undefined") return null;
   return (
     <>
@@ -142,7 +155,7 @@ export default function BuyNFTs({
                   id="delta"
                   autoComplete="none"
                   className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                  value={deltaDisplayed}
+                  value={deltaDisplayed || undefined}
                   onChange={(e) =>
                     onChangeDelta(
                       +e.target.value
@@ -193,7 +206,7 @@ export default function BuyNFTs({
             </div>
 
             <div className="w-full">
-              {isInvalidAmount ? (
+              {typeof wantBuyAmount !== "undefined" && isInvalidAmount ? (
                 <p className="text-center text-sm text-red-500">
                   Invalid count
                 </p>
@@ -220,7 +233,10 @@ export default function BuyNFTs({
               min={0}
               max={buyPoolWantBuy || 0}
               value={buyCount}
-              onChange={(e) => setBuyCount(+e.target.value)}
+              onChange={(e) => {
+                setBuyCount(+e.target.value);
+                onChangeBuyCount(+e.target.value);
+              }}
             />
             <p className="text-xs">
               will cost you{" "}

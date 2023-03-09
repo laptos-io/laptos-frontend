@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { IOwnerCollection } from "@/hooks/useUserNFTs";
 import { ICoinInfo } from "@/types/misc";
-import { PoolType } from "@/types/nft";
+import { CreatePoolStep, PoolType } from "@/types/nft";
 
 import SelectNFTCollectionDialog from "./SelectNFTCollectionDialog";
 import SelectTokenDialog from "./SelectTokenDialog";
@@ -15,6 +15,7 @@ interface Props {
   onChangeXtype: (value?: string) => void;
   onChangeXTokenCollection: (value?: IOwnerCollection) => void;
   onChangeYtype: (value?: ICoinInfo) => void;
+  onChangeStep: (value: CreatePoolStep) => void;
 }
 
 export default function SelectAssets({
@@ -24,6 +25,7 @@ export default function SelectAssets({
   onChangeXtype,
   onChangeXTokenCollection,
   onChangeYtype,
+  onChangeStep,
 }: Props) {
   const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
   const [selectedToken, setSelectedToken] = useState<ICoinInfo>();

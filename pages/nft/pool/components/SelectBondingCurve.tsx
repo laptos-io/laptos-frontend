@@ -2,7 +2,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { Fragment, useMemo } from "react";
 
-import { BondingCurve } from "@/types/nft";
+import { BondingCurve, CreatePoolStep } from "@/types/nft";
 
 interface Props {
   value: BondingCurve;
