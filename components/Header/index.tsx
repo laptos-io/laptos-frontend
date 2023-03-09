@@ -34,12 +34,12 @@ export default function Header() {
       </div>
 
       <div className="inline-flex items-center justify-start space-x-3">
-        <Link passHref href={`/nft?network=${network}`}>
+        {/* <Link passHref href={`/nft?network=${network}`}>
           <a className="rounded-lg bg-primary/20 px-3 py-2 font-medium leading-6 text-primary transition-colors hover:bg-primary/30">
             Your NFTs
           </a>
-        </Link>
-        <Link passHref href={`/pools?network=${network}`}>
+        </Link> */}
+        <Link passHref href={`/pool?network=${network}`}>
           <a className="rounded-lg bg-primary/20 px-3 py-2 font-medium leading-6 text-primary transition-colors hover:bg-primary/30">
             Your Pools
           </a>
