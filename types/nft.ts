@@ -23,7 +23,7 @@ export enum CreatePoolStep {
 }
 
 export enum PoolType {
-  Token, // buy
+  Token = 1, // buy
   NFT, // sell
   Trade, // trading
 }

@@ -18,7 +18,7 @@ interface Props {
 const options = [
   {
     title: "Buy NFTs with tokens",
-    value: PoolType.NFT,
+    value: PoolType.Token,
     icon1: IconNFT,
     icon2: IconToken,
     description:
@@ -26,7 +26,7 @@ const options = [
   },
   {
     title: "Sell NFTs for tokens",
-    value: PoolType.Token,
+    value: PoolType.NFT,
     icon1: IconToken,
     icon2: IconNFT,
     description:
@@ -55,7 +55,7 @@ export default function SelectPoolType({
             I want to ...
           </RadioGroup.Label>
 
-          <div className="flex mt-6 items-stretch justify-center space-x-9">
+          <div className="mt-6 flex items-stretch justify-center space-x-9">
             {options.map((opt) => (
               <RadioGroup.Option
                 key={opt.title}
@@ -63,7 +63,7 @@ export default function SelectPoolType({
                 className={({ active }) =>
                   classNames(
                     active ? "border-indigo-600 ring-2 ring-indigo-600" : "",
-                    "flex relative w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-transparent bg-white p-4 py-12 shadow-lg focus:outline-none sm:max-w-[376px]"
+                    "relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-transparent bg-white p-4 py-12 shadow-lg focus:outline-none sm:max-w-[376px]"
                   )
                 }
               >
@@ -73,13 +73,13 @@ export default function SelectPoolType({
                       <span className="flex flex-col items-center">
                         <RadioGroup.Label
                           as="span"
-                          className="block mb-5 text-base font-medium text-gray-900 lg:text-xl"
+                          className="mb-5 block text-base font-medium text-gray-900 lg:text-xl"
                         >
                           {opt.title}
                         </RadioGroup.Label>
                         <RadioGroup.Description
                           as="div"
-                          className="flex mb-20 w-full items-center justify-center space-x-3 xl:space-x-6"
+                          className="mb-20 flex w-full items-center justify-center space-x-3 xl:space-x-6"
                         >
                           <div>
                             <Image
@@ -111,7 +111,7 @@ export default function SelectPoolType({
                         </RadioGroup.Description>
                         <RadioGroup.Description
                           as="span"
-                          className="flex mt-1 items-center text-sm text-[#6B7196]"
+                          className="mt-1 flex items-center text-sm text-[#6B7196]"
                         >
                           {opt.description}
                         </RadioGroup.Description>

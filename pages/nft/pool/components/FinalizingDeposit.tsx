@@ -1,14 +1,15 @@
-import { BigNumber, formatFixed } from "@ethersproject/bignumber";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { Types } from "aptos";
+import { BigNumber, formatFixed, parseFixed } from "@ethersproject/bignumber";
+import { useWallet } from "@manahippo/aptos-wallet-adapter";
+import { HexString, Types } from "aptos";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRecoilValue } from "recoil";
 
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import { BASIC_DECIMALS } from "@/constants/misc";
+import useAptosClient from "@/hooks/useAptosClient";
 import useAptosWallet from "@/hooks/useAptosWallet";
-import useCreatePoolByAdmin from "@/hooks/useCreatePoolByAdmin";
+import useCreateNFTPoolAndAddLiquidity from "@/hooks/useCreateNFTPoolAndAddLiquidity";
 import { IOwnerCollection, OwnerTokens } from "@/hooks/useUserNFTs";
 import { getErrMsg } from "@/lib/error";
 import { networkState } from "@/recoil/network";
@@ -55,53 +56,122 @@ export default function FinalizingDeposit({
   yType,
   onChangeStep,
 }: Props) {
+  const { signAndSubmitTransaction } = useWallet();
+  const aptosClient = useAptosClient();
+  const [creatable, setCreatable] = useState(true);
   const { network } = useRecoilValue(networkState);
   const { connected, activeWallet, openModal } = useAptosWallet();
   const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
   const [tokens, setTokens] = useState<OwnerTokens>([]);
 
-  // const disableCreate = useMemo(() => {
-  //   return (
-  //     !activeWallet ||
-  //     !xTokenCollection ||
-  //     !yCoin ||
-  //     !spotPrice ||
-  //     !bondingCurve
-  //   );
-  // }, [activeWallet, bondingCurve, spotPrice, xTokenCollection, yCoin]);
+  const disableCreate = useMemo(() => {
+    return (
+      !activeWallet ||
+      !xTokenCollection ||
+      !yCoin ||
+      !spotPrice ||
+      !bondingCurve ||
+      !creatable
+    );
+  }, [
+    activeWallet,
+    bondingCurve,
+    creatable,
+    spotPrice,
+    xTokenCollection,
+    yCoin,
+  ]);
 
-  // const createPoolPayload = useMemo(() => {
-  //   if (disableCreate) return;
-  //   const args = [
-  //     activeWallet!.toString(),
-  //     true,
-  //     `LP_${xCoin?.symbol}/${yCoin?.symbol}`,
-  //     `${xCoin?.symbol}/${yCoin?.symbol}`,
-  //   ];
-  //   const payload: Types.TransactionPayload_EntryFunctionPayload = {
-  //     type: "entry_function_payload",
-  //     function: `${FT_SWAP_ADDRESSES[network]}::LinearScripts::createPair`,
-  //     type_arguments: [xCoin!.token_type.type, yCoin!.token_type.type],
-  //     arguments: args,
-  //   };
-  //   return payload;
-  // }, [activeWallet, disableCreate, network, xCoin, yCoin]);
+  const createPoolPayload = useMemo(() => {
+    if (disableCreate) return;
+    const args = [
+      activeWallet!.toString(),
+      poolType || 1, // parseFixed((poolType || 1).toString(), 1).div(parseFixed("1", 8)),
+      bondingCurve || 1, // parseFixed((bondingCurve || 1).toString(), 1).div(parseFixed("1", 8)),
+      spotPrice.amount?.value._hex,
+      delta._hex,
+      fee?._hex,
+      activeWallet!.toString(),
+    ];
+    const payload: Types.TransactionPayload_EntryFunctionPayload = {
+      type: "entry_function_payload",
+      function: `${FT_SWAP_ADDRESSES[network]}::pair_scripts::createPair`,
+      type_arguments: ["0x3::token::TokenStore", yCoin!.token_type.type],
+      arguments: args,
+    };
+    return payload;
+  }, [
+    activeWallet,
+    bondingCurve,
+    delta,
+    disableCreate,
+    fee,
+    network,
+    poolType,
+    spotPrice,
+    yCoin,
+  ]);
 
-  // const {
-  //   pendingTx,
-  //   pending,
-  //   error,
-  //   mutate: onCreatePool,
-  // } = useCreatePoolByAdmin(createPoolPayload);
+  const addLiquidityPayloadWithoutPoolNum = useMemo(() => {
+    const collectionName = tokens?.[0]?.collection_name;
+    if (!yCoin || !collectionName || !yCoin?.token_type.type) return;
+    const methodName = "depositCoinNFTs";
+    const type_arguments = ["0x3::token::TokenStore", yCoin.token_type.type];
+    const args = [
+      undefined, // poolNum
+      poolType === PoolType.NFT ? "0" : spotPrice.amount?.value._hex, // amount
+      activeWallet!.toString(), // creator
+      collectionName,
+      tokens?.map((t) => t.name),
+    ];
 
-  // useEffect(() => {
-  //   const errMsg = getErrMsg(error);
-  //   if (errMsg) {
-  //     toast.error(errMsg);
-  //   } else if (pendingTx && !pending) {
-  //     toast.success("Succeed to create pool!");
-  //   }
-  // }, [error, pending, pendingTx]);
+    console.log(1234, { args, poolType });
+
+    const payload: Types.TransactionPayload_EntryFunctionPayload = {
+      type: "entry_function_payload",
+      function: `${FT_SWAP_ADDRESSES[network]}::pair_scripts::${methodName}`,
+      type_arguments: type_arguments,
+      arguments: args,
+    };
+    return payload;
+  }, [
+    activeWallet,
+    network,
+    poolType,
+    spotPrice.amount?.value._hex,
+    tokens,
+    yCoin,
+  ]);
+
+  const {
+    pendingTx,
+    pending,
+    error,
+    mutate: onCreatePool,
+  } = useCreateNFTPoolAndAddLiquidity(
+    createPoolPayload,
+    addLiquidityPayloadWithoutPoolNum
+  );
+
+  // const handleAddLiquidity = useCallback(async () => {
+
+  //   console.log({ payload });
+  //   const pendingTx = await signAndSubmitTransaction(payload);
+  //   console.log("pendingTx", pendingTx);
+  //   const txn = await aptosClient.waitForTransactionWithResult(pendingTx.hash);
+  //   console.log(1234, txn);
+  // }, [aptosClient, network, signAndSubmitTransaction, yCoin]);
+
+  useEffect(() => {
+    const errMsg = getErrMsg(error);
+    if (errMsg) {
+      toast.error(errMsg);
+    } else if (pendingTx && !pending) {
+      console.log(1234, pendingTx);
+      toast.success("Succeed to create pool!");
+      setCreatable(false);
+    }
+  }, [error, pending, pendingTx]);
 
   return (
     <>
@@ -148,7 +218,13 @@ export default function FinalizingDeposit({
                 : "Select your NFTs"}
             </button>
 
-            <button className="rounded-lg border border-primary px-4 py-2 text-sm leading-6 text-primary hover:bg-primary hover:text-white">
+            <button
+              className="rounded-lg border border-primary px-4 py-2 text-sm leading-6 text-primary hover:bg-primary hover:text-white"
+              onClick={() => {
+                setCreatable(true);
+                onCreatePool();
+              }}
+            >
               Create Pool
             </button>
           </div>

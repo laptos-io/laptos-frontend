@@ -36,7 +36,7 @@ export default function SelectAssets({
   return (
     <>
       <div className="mx-auto w-full max-w-md 2xl:max-w-3xl">
-        {poolType === PoolType.NFT ? (
+        {poolType === PoolType.Token ? (
           <div className="card w-full space-y-4 px-12 py-10">
             <div className="text-sm lg:text-lg">I want to...</div>
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">
@@ -87,7 +87,7 @@ export default function SelectAssets({
               </div>
             </div>
           </div>
-        ) : poolType === PoolType.Token ? (
+        ) : poolType === PoolType.NFT ? (
           <div className="card w-full space-y-4 px-12 py-10">
             <div className="text-sm lg:text-lg">I want to...</div>
             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4">

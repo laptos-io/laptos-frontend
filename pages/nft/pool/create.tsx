@@ -1,9 +1,21 @@
 import { BigNumber, BigNumberish, parseFixed } from "@ethersproject/bignumber";
-import { useEffect, useMemo, useState } from "react";
+import { useWallet } from "@manahippo/aptos-wallet-adapter";
+import { Types } from "aptos";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRecoilValue } from "recoil";
 
+import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import { ZERO } from "@/constants/misc";
+import useAptosClient from "@/hooks/useAptosClient";
+import useAptosWallet from "@/hooks/useAptosWallet";
+import useNFTMetadataHandle from "@/hooks/useNFTMetadataHandle";
+import useNFTPairMetadata from "@/hooks/useNFTPairMetadata";
+import useNFTPools from "@/hooks/useNFTPools";
+import usePoolNums from "@/hooks/usePoolNums";
 import { IOwnerCollection } from "@/hooks/useUserNFTs";
 import classNames from "@/lib/classNames";
+import { getCreatedPairMetadata } from "@/lib/getCreatedPairMetadata";
+import { networkState } from "@/recoil/network";
 import { ICoinInfo } from "@/types/misc";
 import {
   BondingCurve,
@@ -78,6 +90,52 @@ export default function CreateNFTPoolPage() {
   useEffect(() => {
     console.log(xTokenCollection, yCoin, spotPrice, delta, currentStep);
   }, [xTokenCollection, delta, spotPrice, yCoin, currentStep]);
+
+  const { network } = useRecoilValue(networkState);
+  const aptosClient = useAptosClient();
+  const { activeWallet } = useAptosWallet();
+
+  const { data: poolNumsHandleData } = usePoolNums(FT_SWAP_ADDRESSES[network]);
+  const poolNumsHandle = useMemo(
+    () => (poolNumsHandleData?.data as any)?.poolNums?.handle,
+    [poolNumsHandleData?.data]
+  );
+
+  const { data: serialNumData } = useNFTPools(poolNumsHandle);
+
+  const serialNum = useMemo(() => {
+    return serialNumData as unknown as string;
+  }, [serialNumData]);
+
+  const { data: NFTMetadataHandleData } = useNFTMetadataHandle(
+    FT_SWAP_ADDRESSES[network],
+    10_000
+  );
+
+  // const NFTMetadataHandle = useMemo(
+  //   () => (NFTMetadataHandleData?.data as any)?.pools?.inner?.handle,
+  //   [NFTMetadataHandleData?.data]
+  // );
+
+  // const { data, error } = useNFTPairMetadata({
+  //   handleString: NFTMetadataHandle,
+  //   serialNum,
+  //   refreshInterval: 5000,
+  // });
+
+  // console.log(2222, {
+  //   NFTMetadataHandleData,
+  //   data,
+  // });
+
+  const handleGetPoolMetadata = useCallback(async () => {
+    const res = await getCreatedPairMetadata({
+      aptosClient,
+      indeedCreatorAddress: FT_SWAP_ADDRESSES[network],
+      accountAddress: activeWallet?.toString(),
+    });
+    console.log(333, res);
+  }, [activeWallet, aptosClient, network]);
   return (
     <div className="h-full w-full">
       <div className="flex w-full flex-col items-center justify-center bg-primary py-[60px] px-10">
@@ -89,7 +147,7 @@ export default function CreateNFTPoolPage() {
         </p>
       </div>
       <div className="container mx-auto py-11">
-        <div className="flex mb-8 w-full items-center  justify-center">
+        <div className="mb-8 flex w-full items-center  justify-center">
           <nav aria-label="Progress">
             <ol className="flex items-center">
               {steps.map((step, stepIdx) => (
@@ -101,13 +159,13 @@ export default function CreateNFTPoolPage() {
                   )}
                 >
                   <div
-                    className="flex absolute inset-0 items-center"
+                    className="absolute inset-0 flex items-center"
                     aria-hidden="true"
                   >
                     <div className="h-px w-full bg-gray-200" />
                   </div>
                   <button
-                    className="flex relative items-center justify-center space-x-2 bg-[#F1F6FF] px-2"
+                    className="relative flex items-center justify-center space-x-2 bg-[#F1F6FF] px-2"
                     aria-current="step"
                     onClick={() => setCurrentStep(step.value)}
                   >
@@ -247,6 +305,7 @@ export default function CreateNFTPoolPage() {
           {xTokenCollection && yCoin && spotPrice && delta && (
             <FinalizingDeposit
               fee={fee}
+              poolType={poolType}
               xTokenCollection={xTokenCollection}
               yCoin={yCoin}
               spotPrice={spotPrice}
@@ -260,6 +319,20 @@ export default function CreateNFTPoolPage() {
             />
           )}
         </div>
+      </div>
+      <div className="flex w-full justify-center space-x-3">
+        <button
+          className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
+          onClick={handleGetPoolMetadata}
+        >
+          Get PoolMetadata
+        </button>
+        {/* <button
+          className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
+          onClick={handleAddLiquidity}
+        >
+          Add Liquidity
+        </button> */}
       </div>
     </div>
   );
