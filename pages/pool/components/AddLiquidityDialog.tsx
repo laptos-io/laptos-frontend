@@ -180,9 +180,9 @@ const AddLiquidityDialog = ({ isOpen, tokenPair, onDismiss }: DialogProps) => {
       console.log("pendingTx", pendingTx);
       setPendingTx(pendingTx as PendingTransaction);
       const txn = await aptosClient.waitForTransactionWithResult(
-        pendingTx.hash
+        pendingTx.hash,
+        { checkSuccess: true }
       );
-      console.log(1234, txn);
       onDismiss();
     } catch (error) {
       console.log(error);

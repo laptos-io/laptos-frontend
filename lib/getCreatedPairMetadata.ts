@@ -54,6 +54,10 @@ export const getCreatedPairMetadata = async ({
     value_type: `${indeedCreatorAddress}::pair_factory::PoolMetadata<0x3::token::TokenStore, 0x1::aptos_coin::AptosCoin>`,
     key: poolId,
   });
+  console.log("@@@ serialNum + data", {
+    serialNum,
+    data: data ? JSON.stringify(data) : undefined,
+  });
   return {
     serialNum,
     data,

@@ -205,7 +205,8 @@ const SwapBox = () => {
       console.log("pendingTx", pendingTx);
       setPendingTx(pendingTx as PendingTransaction);
       const txn = await aptosClient.waitForTransactionWithResult(
-        pendingTx.hash
+        pendingTx.hash,
+        { checkSuccess: true }
       );
       console.log(1234, txn);
     } catch (error) {

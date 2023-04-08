@@ -1,6 +1,7 @@
 import { useWallet } from "@manahippo/aptos-wallet-adapter";
 import { Types } from "aptos";
 import { PendingTransaction } from "aptos/src/generated";
+import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRecoilValue } from "recoil";
@@ -26,6 +27,7 @@ export default function useCreateNFTPoolAndAddLiquidity(
   const { signAndSubmitTransaction } = useWallet();
 
   const { network } = useRecoilValue(networkState);
+  const router = useRouter();
   const mutate = useCallback(async () => {
     if (!adminAccount || !payload || !addLiquidityPayload) {
       setError(new Error("Invalid admin account"));
@@ -45,7 +47,9 @@ export default function useCreateNFTPoolAndAddLiquidity(
       );
       const transaction = await aptosClient.submitTransaction(signed_txn);
       setPendingTx(transaction);
-      await aptosClient.waitForTransaction(transaction.hash);
+      await aptosClient.waitForTransaction(transaction.hash, {
+        checkSuccess: true,
+      });
       const { serialNum } =
         (await getCreatedPairMetadata({
           aptosClient,
@@ -59,16 +63,19 @@ export default function useCreateNFTPoolAndAddLiquidity(
         arguments: [+serialNum, ...addLiquidityPayload.arguments.slice(1)],
       });
 
-      const pendingAddLiquidityTx = await signAndSubmitTransaction(
+      const pendingCreateNFTPair = await signAndSubmitTransaction(
         indeedAddLiquidityPayload
       );
-      console.log("pendingAddLiquidityTx", pendingAddLiquidityTx);
+      console.log("pendingCreateNFTPair", pendingCreateNFTPair, payload);
       const txn = await aptosClient.waitForTransactionWithResult(
-        pendingAddLiquidityTx.hash
+        pendingCreateNFTPair.hash,
+        { checkSuccess: true }
       );
-      console.log(txn);
+      console.log("@@@ create NFT Pair", txn);
       toast.success("创建成功");
+      router.replace(`/nft/pool/my?network=${network}`);
     } catch (error) {
+      console.log(error);
       setError(error);
     }
     setPending(false);
@@ -79,6 +86,7 @@ export default function useCreateNFTPoolAndAddLiquidity(
     aptosClient,
     network,
     payload,
+    router,
     signAndSubmitTransaction,
   ]);
 

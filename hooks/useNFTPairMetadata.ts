@@ -4,6 +4,7 @@ import useSWR from "swr";
 
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
 import { networkState } from "@/recoil/network";
+import { INFTPairMetadata } from "@/types/nftpair";
 
 import useAptosClient from "./useAptosClient";
 import useAptosWallet from "./useAptosWallet";
@@ -30,8 +31,8 @@ export default function useNFTPairMetadata({
         }
       : null;
 
-  return useSWR<MoveResource[], unknown>(
-    handleString && poolId ? handleString : undefined,
+  return useSWR<INFTPairMetadata, unknown>(
+    handleString && poolId && serialNum ? [handleString, serialNum] : undefined,
     () =>
       aptosClient.getTableItem(handleString!, {
         key_type: `${FT_SWAP_ADDRESSES[network]}::pair_factory::PoolId`,

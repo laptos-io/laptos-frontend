@@ -154,7 +154,7 @@ export default function BuyNFTs({
                   value={deltaDisplayed}
                   onChange={(e) =>
                     onChangeDelta(
-                      e.target.value && +e.target.value
+                      +e.target.value
                         ? parseFixed(e.target.value, BASIC_DECIMALS)
                         : undefined
                     )

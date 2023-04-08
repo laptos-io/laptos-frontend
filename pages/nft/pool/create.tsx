@@ -100,46 +100,12 @@ export default function CreateNFTPoolPage() {
   const aptosClient = useAptosClient();
   const { activeWallet } = useAptosWallet();
 
-  const { data: poolNumsHandleData } = usePoolNums(FT_SWAP_ADDRESSES[network]);
-  const poolNumsHandle = useMemo(
-    () => (poolNumsHandleData?.data as any)?.poolNums?.handle,
-    [poolNumsHandleData?.data]
-  );
-
-  const { data: serialNumData } = useNFTPools(poolNumsHandle);
-
-  const serialNum = useMemo(() => {
-    return serialNumData as unknown as string;
-  }, [serialNumData]);
-
-  const { data: NFTMetadataHandleData } = useNFTMetadataHandle(
-    FT_SWAP_ADDRESSES[network],
-    10_000
-  );
-
-  // const NFTMetadataHandle = useMemo(
-  //   () => (NFTMetadataHandleData?.data as any)?.pools?.inner?.handle,
-  //   [NFTMetadataHandleData?.data]
-  // );
-
-  // const { data, error } = useNFTPairMetadata({
-  //   handleString: NFTMetadataHandle,
-  //   serialNum,
-  //   refreshInterval: 5000,
-  // });
-
-  // console.log(2222, {
-  //   NFTMetadataHandleData,
-  //   data,
-  // });
-
   const handleGetPoolMetadata = useCallback(async () => {
     const res = await getCreatedPairMetadata({
       aptosClient,
       indeedCreatorAddress: FT_SWAP_ADDRESSES[network],
       accountAddress: activeWallet?.toString(),
     });
-    console.log(333, res);
   }, [activeWallet, aptosClient, network]);
   return (
     <div className="h-full w-full">
@@ -326,12 +292,12 @@ export default function CreateNFTPoolPage() {
         </div>
       </div>
       <div className="flex w-full justify-center space-x-3">
-        {/* <button
+        <button
           className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
           onClick={handleGetPoolMetadata}
         >
           Get PoolMetadata
-        </button> */}
+        </button>
         {/* <button
           className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
           onClick={handleAddLiquidity}

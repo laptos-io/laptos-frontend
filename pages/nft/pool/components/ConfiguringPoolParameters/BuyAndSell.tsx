@@ -207,12 +207,7 @@ export default function BuyAndSell({
                   onChange={(e) =>
                     onChangeDelta(
                       +e.target.value
-                        ? bondingCurve === BondingCurve.Exponential
-                          ? parseFixed(
-                              (+e.target.value / 100).toString(),
-                              BASIC_DECIMALS
-                            )
-                          : parseFixed(e.target.value, BASIC_DECIMALS)
+                        ? parseFixed(e.target.value, BASIC_DECIMALS)
                         : undefined
                     )
                   }

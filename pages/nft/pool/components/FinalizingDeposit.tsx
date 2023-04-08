@@ -59,7 +59,7 @@ export default function FinalizingDeposit({
 }: Props) {
   const [creatable, setCreatable] = useState(true);
   const { network } = useRecoilValue(networkState);
-  const { connected, activeWallet, openModal } = useAptosWallet();
+  const { activeWallet } = useAptosWallet();
   const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
   const [tokens, setTokens] = useState<OwnerTokens>([]);
 
@@ -95,7 +95,10 @@ export default function FinalizingDeposit({
       bondingCurve, // parseFixed((bondingCurve || 1).toString(), 1).div(parseFixed("1", 8)),
       spotPrice.amount?.value._hex,
       delta._hex,
-      fee?._hex,
+      "0", // TODO: fee 还有点问题
+      // fee && BigNumber.isBigNumber(fee)
+      //   ? parseFixed(fee.toString(), BASIC_DECIMALS).div("100")._hex
+      //   : "0",
       activeWallet!.toString(),
     ];
     const payload: Types.TransactionPayload_EntryFunctionPayload = {
@@ -104,6 +107,7 @@ export default function FinalizingDeposit({
       type_arguments: ["0x3::token::TokenStore", yCoin!.token_type.type],
       arguments: args,
     };
+    console.log("@@@ fee", fee, payload);
     return payload;
   }, [
     activeWallet,
@@ -129,8 +133,6 @@ export default function FinalizingDeposit({
       collectionName,
       tokens?.map((t) => t.name),
     ];
-
-    console.log(1234, { args, poolType });
 
     const payload: Types.TransactionPayload_EntryFunctionPayload = {
       type: "entry_function_payload",

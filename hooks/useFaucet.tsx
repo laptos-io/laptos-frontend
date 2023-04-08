@@ -33,7 +33,8 @@ export default function useFaucet(
       console.log("Faucet pendingTx", pendingTx);
       setPendingTx(pendingTx as PendingTransaction);
       const _tx = await aptosClient.waitForTransactionWithResult(
-        pendingTx.hash
+        pendingTx.hash,
+        { checkSuccess: true }
       );
       setTx(_tx);
       setPendingTx(undefined);
