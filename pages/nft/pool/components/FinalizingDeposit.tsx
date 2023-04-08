@@ -3,6 +3,7 @@ import { useWallet } from "@manahippo/aptos-wallet-adapter";
 import { HexString, Types } from "aptos";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import { CgSpinnerTwoAlt } from "react-icons/cg";
 import { useRecoilValue } from "recoil";
 
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
@@ -56,8 +57,6 @@ export default function FinalizingDeposit({
   yType,
   onChangeStep,
 }: Props) {
-  const { signAndSubmitTransaction } = useWallet();
-  const aptosClient = useAptosClient();
   const [creatable, setCreatable] = useState(true);
   const { network } = useRecoilValue(networkState);
   const { connected, activeWallet, openModal } = useAptosWallet();
@@ -83,11 +82,17 @@ export default function FinalizingDeposit({
   ]);
 
   const createPoolPayload = useMemo(() => {
-    if (disableCreate) return;
+    if (
+      disableCreate ||
+      !poolType ||
+      !bondingCurve ||
+      !spotPrice.amount?.value._hex
+    )
+      return;
     const args = [
       activeWallet!.toString(),
-      poolType || 1, // parseFixed((poolType || 1).toString(), 1).div(parseFixed("1", 8)),
-      bondingCurve || 1, // parseFixed((bondingCurve || 1).toString(), 1).div(parseFixed("1", 8)),
+      poolType, // parseFixed((poolType || 1).toString(), 1).div(parseFixed("1", 8)),
+      bondingCurve, // parseFixed((bondingCurve || 1).toString(), 1).div(parseFixed("1", 8)),
       spotPrice.amount?.value._hex,
       delta._hex,
       fee?._hex,
@@ -142,6 +147,10 @@ export default function FinalizingDeposit({
     tokens,
     yCoin,
   ]);
+
+  useEffect(() => {
+    console.log("@@@ createPoolPayload", createPoolPayload);
+  }, [createPoolPayload]);
 
   const {
     pendingTx,
@@ -219,13 +228,20 @@ export default function FinalizingDeposit({
             </button>
 
             <button
-              className="rounded-lg border border-primary px-4 py-2 text-sm leading-6 text-primary hover:bg-primary hover:text-white"
+              disabled={
+                !(createPoolPayload && addLiquidityPayloadWithoutPoolNum) ||
+                pending
+              }
+              className={`inline-flex items-center justify-center space-x-2 rounded-lg border border-primary px-4 py-2 text-sm leading-6 text-primary hover:bg-primary hover:text-white ${
+                pending ? "cursor-wait" : "cursor-pointer"
+              }`}
               onClick={() => {
                 setCreatable(true);
                 onCreatePool();
               }}
             >
-              Create Pool
+              <span>Create Pool</span>
+              {pending && <CgSpinnerTwoAlt className="h-4 w-4 animate-spin" />}
             </button>
           </div>
         </div>

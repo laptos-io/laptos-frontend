@@ -66,12 +66,12 @@ export default function useCreateNFTPoolAndAddLiquidity(
       const txn = await aptosClient.waitForTransactionWithResult(
         pendingAddLiquidityTx.hash
       );
-      setPending(false);
       console.log(txn);
       toast.success("创建成功");
     } catch (error) {
       setError(error);
     }
+    setPending(false);
   }, [
     activeWallet,
     addLiquidityPayload,

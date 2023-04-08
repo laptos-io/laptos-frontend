@@ -56,6 +56,11 @@ export default function CreateNFTPoolPage() {
     BondingCurve.Linear
   );
   const [delta, setDelta] = useState<BigNumber>();
+
+  useEffect(() => {
+    console.log("@@@ delta", delta);
+  }, [delta]);
+
   const [fee, setFee] = useState<BigNumber | undefined>(ZERO);
 
   const [buyCount, setBuyCount] = useState<number>();
@@ -237,7 +242,7 @@ export default function CreateNFTPoolPage() {
               : "hidden"
           )}
         >
-          {poolType === PoolType.NFT && (
+          {poolType === PoolType.Token && (
             <BuyNFTs
               fee={fee}
               xTokenCollection={xTokenCollection}
@@ -255,7 +260,7 @@ export default function CreateNFTPoolPage() {
             />
           )}
 
-          {poolType === PoolType.Token && (
+          {poolType === PoolType.NFT && (
             <SellNFTs
               fee={fee}
               xTokenCollection={xTokenCollection}
@@ -321,12 +326,12 @@ export default function CreateNFTPoolPage() {
         </div>
       </div>
       <div className="flex w-full justify-center space-x-3">
-        <button
+        {/* <button
           className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
           onClick={handleGetPoolMetadata}
         >
           Get PoolMetadata
-        </button>
+        </button> */}
         {/* <button
           className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
           onClick={handleAddLiquidity}

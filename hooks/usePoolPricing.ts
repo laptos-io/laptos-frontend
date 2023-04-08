@@ -20,7 +20,8 @@ export const usePoolPricing = ({
   const basicPrice = parseFixed("1", BASIC_DECIMALS);
   if (!spotPrice || spotPrice.eq(ZERO)) return ZERO;
   if (bondingCurve === BondingCurve.Exponential) {
-    delta = !delta ? ZERO : delta;
+    delta = !delta ? ZERO : delta.div(100);
+    console.log("--- delta", delta);
     // delta = !delta ? ZERO : delta.lt(basicPrice) ? delta.sub(basicPrice) : ZERO  // 取小数部分的BN类型
     if (poolType === PoolType.NFT) {
       // 卖 NFT, 递增

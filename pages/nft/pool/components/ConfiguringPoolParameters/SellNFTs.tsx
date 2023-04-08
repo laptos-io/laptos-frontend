@@ -73,7 +73,7 @@ export default function BuyNFTs({
   if (typeof bondingCurve === "undefined") return null;
   return (
     <>
-      <div className="flex mx-auto w-full max-w-4xl items-stretch space-x-4">
+      <div className="mx-auto flex w-full max-w-4xl items-stretch space-x-4">
         <div className="card flex-1 shrink-0 rounded-lg px-6 py-10 shadow-lg">
           <h2 className="mb-2 text-center text-[20px] font-medium">
             Pool Pricing
@@ -89,13 +89,13 @@ export default function BuyNFTs({
               >
                 Start Price
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <input
                   type="text"
                   name="sopt-price"
                   id="sopt-price"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-16 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-16 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={spotPrice?.amount?.displayed}
                   onChange={(e) =>
                     onChangeSpotPrice(
@@ -129,7 +129,7 @@ export default function BuyNFTs({
               >
                 Bouding Curve
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <SelectBondingCurve
                   value={bondingCurve}
                   onChange={onChangeBondingCurve}
@@ -144,23 +144,18 @@ export default function BuyNFTs({
               >
                 Delta
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <input
                   type="number"
                   name="delta"
                   id="delta"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={deltaDisplayed}
                   onChange={(e) =>
                     onChangeDelta(
-                      +e.target.value
-                        ? bondingCurve === BondingCurve.Exponential
-                          ? parseFixed(
-                              (+e.target.value / 100).toString(),
-                              BASIC_DECIMALS
-                            )
-                          : parseFixed(e.target.value, BASIC_DECIMALS)
+                      e.target.value && +e.target.value
+                        ? parseFixed(e.target.value, BASIC_DECIMALS)
                         : undefined
                     )
                   }
@@ -181,20 +176,20 @@ export default function BuyNFTs({
             Set how many NFTs you deposit into the pool.
           </p>
           <div className="w-full">
-            <div className="flex mb-5 w-full items-center justify-between">
+            <div className="mb-5 flex w-full items-center justify-between">
               <label
                 htmlFor="wantBuy"
                 className="block text-sm font-medium leading-6 text-[#6B7196]"
               >
                 If you want to sell
               </label>
-              <div className="flex relative ml-3 flex-1 rounded-xl shadow-sm">
+              <div className="relative ml-3 flex flex-1 rounded-xl shadow-sm">
                 <input
                   type="number"
                   name="wantBuy"
                   id="wantBuy"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={buyPoolWantSell}
                   onChange={(e) =>
                     setBuyPoolWantSell(+e.target.value ?? undefined)
@@ -217,7 +212,7 @@ export default function BuyNFTs({
             </div>
           </div>
           <div className="my-16 h-0 border-t border-slate-100"></div>
-          <div className="flex mx-auto w-full max-w-xs flex-col items-center space-y-4">
+          <div className="mx-auto flex w-full max-w-xs flex-col items-center space-y-4">
             <p className="text-xs">
               Selling <strong>{sellCount || 0}</strong> NFTs...
             </p>

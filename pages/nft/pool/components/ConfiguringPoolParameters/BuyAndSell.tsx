@@ -96,7 +96,7 @@ export default function BuyAndSell({
   if (typeof bondingCurve === "undefined") return null;
   return (
     <>
-      <div className="flex mx-auto w-full max-w-4xl items-stretch space-x-4">
+      <div className="mx-auto flex w-full max-w-4xl items-stretch space-x-4">
         <div className="card flex-1 shrink-0 rounded-lg px-6 py-10 shadow-lg">
           <h2 className="mb-2 text-center text-[20px] font-medium">
             Pool Pricing
@@ -112,13 +112,13 @@ export default function BuyAndSell({
               >
                 Fee
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <input
                   type="text"
                   name="fee"
                   id="fee"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={fee?.toNumber()}
                   onChange={(e) =>
                     onChangeFee(
@@ -141,13 +141,13 @@ export default function BuyAndSell({
               >
                 Start Price
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <input
                   type="text"
                   name="sopt-price"
                   id="sopt-price"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-16 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-16 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={spotPrice?.amount?.displayed}
                   onChange={(e) =>
                     onChangeSpotPrice(
@@ -181,7 +181,7 @@ export default function BuyAndSell({
               >
                 Bouding Curve
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <SelectBondingCurve
                   value={bondingCurve}
                   onChange={onChangeBondingCurve}
@@ -196,13 +196,13 @@ export default function BuyAndSell({
               >
                 Delta
               </label>
-              <div className="flex relative mt-2 rounded-xl shadow-sm">
+              <div className="relative mt-2 flex rounded-xl shadow-sm">
                 <input
                   type="number"
                   name="delta"
                   id="delta"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={deltaDisplayed}
                   onChange={(e) =>
                     onChangeDelta(
@@ -233,20 +233,20 @@ export default function BuyAndSell({
             Set your APT and {xTokenCollection?.name} count
           </p>
           <div className="mb-8 w-full">
-            <div className="flex mb-3 w-full items-center justify-between">
+            <div className="mb-3 flex w-full items-center justify-between">
               <label
                 htmlFor="wantBuy"
                 className="block text-sm font-medium leading-6 text-[#6B7196]"
               >
                 Buy up to
               </label>
-              <div className="flex relative ml-3 flex-1 rounded-xl shadow-sm">
+              <div className="relative ml-3 flex flex-1 rounded-xl shadow-sm">
                 <input
                   type="number"
                   name="wantBuy"
                   id="wantBuy"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={buyPoolWantBuy}
                   onChange={(e) =>
                     setBuyPoolWantBuy(+e.target.value || undefined)
@@ -269,20 +269,20 @@ export default function BuyAndSell({
           </div>
 
           <div className="mb-8 w-full">
-            <div className="flex mb-3 w-full items-center justify-between">
+            <div className="mb-3 flex w-full items-center justify-between">
               <label
                 htmlFor="wantBuy"
                 className="block text-sm font-medium leading-6 text-[#6B7196]"
               >
                 Sell Up to
               </label>
-              <div className="flex relative ml-3 flex-1 rounded-xl shadow-sm">
+              <div className="relative ml-3 flex flex-1 rounded-xl shadow-sm">
                 <input
                   type="number"
                   name="wantBuy"
                   id="wantBuy"
                   autoComplete="none"
-                  className="block relative w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                  className="relative block w-full min-w-0 flex-1 rounded-xl border-0 py-2 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   value={buyPoolWantSell}
                   onChange={(e) =>
                     setBuyPoolWantSell(+e.target.value ?? undefined)

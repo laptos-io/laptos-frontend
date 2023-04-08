@@ -7,7 +7,7 @@ export default function Page({ type, name }: { type: string; name: string }) {
   const { data: items } = useNFTPoolData(name);
   return (
     <div className="container mx-auto mb-24">
-      <h1 className="flex mb-10 items-center justify-center space-x-4 text-center">
+      <h1 className="mb-10 flex items-center justify-center space-x-4 text-center">
         <span className="text-[40px] font-bold">APT</span>
         <img
           className="h-[40px] w-[40px]"
@@ -18,14 +18,14 @@ export default function Page({ type, name }: { type: string; name: string }) {
       </h1>
       <div className="flex w-full items-stretch justify-start space-x-4">
         <div className="card w-[52%] p-5 shadow">
-          <div className="flex mb-4 w-full items-center justify-between">
+          <div className="mb-4 flex w-full items-center justify-between">
             <span className="text-[28px] font-bold">Assets</span>
             <button className="rounded bg-primary px-4 py-1.5 text-sm leading-5 text-white">
               Withdraw All
             </button>
           </div>
           <div className="w-full rounded-sm bg-[#F9FAFE] p-5">
-            <div className="flex mb-4 items-center justify-between">
+            <div className="mb-4 flex items-center justify-between">
               <span className="text-lg font-medium">Tokens</span>
               <div className="flex items-center space-x-3">
                 <button className="rounded bg-[#F0EBFF] px-2 py-1.5 text-xs text-[#7256DA]">
@@ -40,7 +40,7 @@ export default function Page({ type, name }: { type: string; name: string }) {
           </div>
 
           <div className="flex h-[480px] w-full flex-col overflow-hidden rounded-sm bg-[#F9FAFE] p-5">
-            <div className="flex mb-4 shrink-0 items-center justify-between">
+            <div className="mb-4 flex shrink-0 items-center justify-between">
               <span className="text-lg font-medium">NFTs</span>
               <div className="flex items-center space-x-3">
                 <button className="rounded bg-[#F0EBFF] px-2 py-1.5 text-xs text-[#7256DA]">
@@ -92,7 +92,7 @@ export default function Page({ type, name }: { type: string; name: string }) {
         </div>
         <div className="flex flex-1 flex-col items-center justify-start space-y-4">
           <div className="card w-full p-5 shadow">
-            <div className="flex mb-7 w-full items-center justify-between">
+            <div className="mb-7 flex w-full items-center justify-between">
               <span className="text-[28px] font-bold">Pricing</span>
               <button className="rounded bg-primary px-4 py-1.5 text-sm leading-5 text-white">
                 Edit
@@ -113,13 +113,13 @@ export default function Page({ type, name }: { type: string; name: string }) {
                 <div className="text-lg font-bold">{"0.20"}%</div>
               </div>
               <div className="flex h-[112px] flex-1 flex-col items-center justify-between rounded-2xl bg-[#FFF3DC] p-6">
-                <div className="text-sm font-semibold">SWap Fee</div>
+                <div className="text-sm font-semibold">Swap Fee</div>
                 <div className="text-lg font-bold">{"2.5"}%</div>
               </div>
             </div>
           </div>
           <div className="card w-full flex-1 p-5 shadow">
-            <div className="flex mb-7 w-full items-center justify-between">
+            <div className="mb-7 flex w-full items-center justify-between">
               <span className="text-[28px] font-bold">About</span>
             </div>
             <div className="mb-3">Pool Owner:</div>
