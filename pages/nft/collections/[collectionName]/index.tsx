@@ -52,7 +52,6 @@ const calcCollectionItemPrice = ({
 export default function NftDetailPage() {
   const router = useRouter();
   const { data } = useCollectionDetail(router.query.collectionName as string);
-  console.log("@@@ data", data);
   const [activeTab, setActiveTab] = useState(Tab.Buy);
 
   const buyItems = useMemo(() => {

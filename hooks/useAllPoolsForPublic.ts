@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecoilValue } from "recoil";
 
@@ -53,14 +54,24 @@ export default function useAllPoolsForPublic(poolsLength = 11) {
           : null;
       const promiseItem =
         poolId && network && FT_SWAP_ADDRESSES[network]
-          ? aptosClient.getTableItem(handleString!, {
-              key_type: `${FT_SWAP_ADDRESSES[network]}::pair_factory::PoolId`,
-              value_type: `${FT_SWAP_ADDRESSES[network]}::pair_factory::PoolMetadata<0x3::token::TokenStore, 0x1::aptos_coin::AptosCoin>`,
-              key: poolId,
+          ? new Promise((resolve, reject) => {
+              return aptosClient
+                .getTableItem(handleString!, {
+                  key_type: `${FT_SWAP_ADDRESSES[network]}::pair_factory::PoolId`,
+                  value_type: `${FT_SWAP_ADDRESSES[network]}::pair_factory::PoolMetadata<0x3::token::TokenStore, 0x1::aptos_coin::AptosCoin>`,
+                  key: poolId,
+                })
+                .then((res) =>
+                  resolve({
+                    ...res,
+                    serialNum,
+                  })
+                )
+                .catch(reject);
             })
           : undefined;
       if (promiseItem) {
-        res.push(promiseItem);
+        res.push(promiseItem as Promise<INFTPairMetadata>);
       }
     }
     return res;

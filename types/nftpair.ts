@@ -23,6 +23,7 @@ export interface INFTPairMetadata {
     };
     length: `${number}`;
   };
+  serialNum?: number;
 }
 
 // {

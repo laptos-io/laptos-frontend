@@ -1,20 +1,51 @@
+import { formatFixed } from "@ethersproject/bignumber";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
+import { useMemo } from "react";
+import { useRecoilValue } from "recoil";
 
+import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
+import { BASIC_DECIMALS } from "@/constants/misc";
+import useNFTMetadataHandle from "@/hooks/useNFTMetadataHandle";
+import useNFTPairMetadata from "@/hooks/useNFTPairMetadata";
 import useNFTPoolData from "@/hooks/useNFTPoolData";
+import { networkState } from "@/recoil/network";
+import { BondingCurve, PoolType } from "@/types/nft";
 
-export default function Page({ type, name }: { type: string; name: string }) {
-  const { data: items } = useNFTPoolData(name);
+export default function Page({
+  collectionName,
+  serialNum,
+}: {
+  collectionName: string;
+  serialNum: string;
+}) {
+  const { network } = useRecoilValue(networkState);
+  const { data: NFTMetadataHandleData } = useNFTMetadataHandle(
+    FT_SWAP_ADDRESSES[network],
+    10_000
+  );
+
+  const handleString = useMemo(
+    () => (NFTMetadataHandleData?.data as any)?.pools?.inner?.handle,
+    [NFTMetadataHandleData?.data]
+  );
+  const { data } = useNFTPairMetadata({ handleString, serialNum });
   return (
     <div className="container mx-auto mb-24">
-      <h1 className="mb-10 flex items-center justify-center space-x-4 text-center">
-        <span className="text-[40px] font-bold">APT</span>
-        <img
-          className="h-[40px] w-[40px]"
-          alt=""
-          src="/images/icon-double-arrow.png"
-        />
-        <span className="text-[40px] font-bold">{name}</span>
+      <h1 className="mb-10 flex items-center justify-center space-x-4 text-center text-[40px]">
+        {data?.poolType === PoolType.NFT ? (
+          <div className="inline-flex shrink-0 items-center text-xl font-bold">
+            {data?.tokenIds?.[0].token_data_id.collection} {"->"} APT
+          </div>
+        ) : data?.poolType === PoolType.Token ? (
+          <div className="inline-flex shrink-0 items-center text-xl font-bold">
+            APT {"->"} {data?.tokenIds?.[0].token_data_id.collection}{" "}
+          </div>
+        ) : (
+          <div className="inline-flex shrink-0 items-center text-xl font-bold">
+            {data?.tokenIds?.[0].token_data_id.collection} {"<->"} APT
+          </div>
+        )}
       </h1>
       <div className="flex w-full items-stretch justify-start space-x-4">
         <div className="card w-[52%] p-5 shadow">
@@ -54,35 +85,32 @@ export default function Page({ type, name }: { type: string; name: string }) {
             <div className="mb-4 shrink-0 text-2xl font-medium">15</div>
             <div className="w-full flex-1 overflow-auto">
               <div className="grid grid-cols-4 gap-3">
-                {items.map((item) => {
+                {data?.tokenIds.map((item) => {
+                  const tokenId = item.token_data_id.name.match(/#(\d+)$/)?.[1];
                   return (
                     <div
-                      key={item.tokenId.token_data_id.name}
+                      key={item.token_data_id.name}
                       className="card col-span-1 rounded-lg px-2 py-3 shadow hover:shadow-xl"
                     >
                       <div className="relative mb-3 w-full rounded bg-pink-200 pt-[100%]">
-                        {item.image && (
+                        {tokenId && (
                           <img
                             className="absolute inset-0 h-full w-full"
                             alt=""
-                            src={item.image}
+                            src={`https://bafybeibgtdkejt77t4w2fl2kh36cokmj5vipwfsxsn2z2fx35trlvg2kc4.ipfs.nftstorage.link/${tokenId}.png`}
                           />
                         )}
                       </div>
                       <div className="mb-1 text-sm text-secondary">
-                        {item.tokenId.token_data_id.name}
+                        {item.token_data_id.name}
                       </div>
                       <div className="mb-2 text-sm font-bold">
-                        {item.tokenId.token_data_id.collection}
+                        {item.token_data_id.collection}
                       </div>
-                      <Link
-                        href={`/nft/collections/BAYC/${item.tokenId.token_data_id.name}`}
-                        passHref
-                      >
-                        <a className="block w-full rounded-lg border border-primary px-3 py-1.5 text-center text-sm leading-5 text-primary hover:bg-primary hover:text-white">
-                          View Item
-                        </a>
-                      </Link>
+
+                      <button className="block w-full rounded-lg border border-primary px-3 py-1.5 text-center text-sm leading-5 text-primary hover:bg-primary hover:text-white">
+                        View Item
+                      </button>
                     </div>
                   );
                 })}
@@ -94,23 +122,37 @@ export default function Page({ type, name }: { type: string; name: string }) {
           <div className="card w-full p-5 shadow">
             <div className="mb-7 flex w-full items-center justify-between">
               <span className="text-[28px] font-bold">Pricing</span>
-              <button className="rounded bg-primary px-4 py-1.5 text-sm leading-5 text-white">
+              <button
+                disabled
+                className="cursor-not-allowed rounded bg-primary px-4 py-1.5 text-sm leading-5 text-white"
+              >
                 Edit
               </button>
             </div>
             <div className="flex w-full items-center space-x-4">
               <div className="flex h-[112px] flex-1 flex-col items-center justify-between rounded-2xl bg-[#FAE8F2] p-6">
                 <div className="text-sm font-semibold">Current Price</div>
-                <div className="text-lg font-bold">{"10"} APT</div>
+                <div className="text-lg font-bold">
+                  {data?.spotPrice
+                    ? formatFixed(data.spotPrice, BASIC_DECIMALS)
+                    : "-"}{" "}
+                  APT
+                </div>
               </div>
               <div className="flex h-[112px] flex-1 flex-col items-center justify-between rounded-2xl bg-[#E6EEFA] p-6">
                 <div className="flex flex-col items-center justify-center text-sm font-semibold">
                   <span className="">Delta</span>
-                  <span className="text-xs uppercase text-[#919BA3]">
-                    {"Exponential"}
-                  </span>
                 </div>
-                <div className="text-lg font-bold">{"0.20"}%</div>
+                <div className="text-lg font-bold">
+                  {data?.delta
+                    ? data?.curveType === BondingCurve.Linear
+                      ? `${formatFixed(
+                          data?.delta.toString(),
+                          BASIC_DECIMALS
+                        )} APT`
+                      : `${formatFixed(data?.delta, BASIC_DECIMALS)} %`
+                    : undefined}{" "}
+                </div>
               </div>
               <div className="flex h-[112px] flex-1 flex-col items-center justify-between rounded-2xl bg-[#FFF3DC] p-6">
                 <div className="text-sm font-semibold">Swap Fee</div>
@@ -128,7 +170,7 @@ export default function Page({ type, name }: { type: string; name: string }) {
             </div>
             <div className="mt-4 w-full border-t border-slate-100 pt-4">
               <p className="mb-3 font-medium">
-                This pool holds {name} and APT to earn swap fees
+                This pool holds {collectionName} and APT to earn swap fees
               </p>
               <p className="mb-3 text-[#6B7196]">
                 Right now this pool will sell at{" "}
@@ -156,8 +198,8 @@ export default function Page({ type, name }: { type: string; name: string }) {
 export const getServerSideProps = ({ params }: GetServerSidePropsContext) => {
   return {
     props: {
-      type: params?.type,
-      name: params?.name,
+      collectionName: params?.collectionName,
+      serialNum: params?.serialNum,
     },
   };
 };
