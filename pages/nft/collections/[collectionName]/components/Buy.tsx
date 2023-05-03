@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 import { BASIC_DECIMALS } from "@/constants/misc";
+import useAddToCart from "@/hooks/carts/useAddToCart";
 import { ICollectionItem } from "@/types/nft";
 
 interface Props {
@@ -14,6 +15,8 @@ export default function Buy({ data }: Props) {
       a.price && b.price && a.price?.lt(b?.price) ? -1 : 1
     );
   }, [data]);
+
+  const handleAddToCart = useAddToCart();
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
       {data?.map((item) => {
@@ -41,11 +44,12 @@ export default function Buy({ data }: Props) {
                 : ""}{" "}
               APT
             </div>
-            <Link href={`/nft/collections/BAYC/${item.name}`} passHref>
-              <a className="block w-full rounded-lg border border-primary px-3 py-1.5 text-center leading-5 text-primary hover:bg-primary hover:text-white">
-                View Item
-              </a>
-            </Link>
+            <button
+              className="block w-full rounded-lg border border-primary px-3 py-1.5 text-center leading-5 text-primary hover:bg-primary hover:text-white"
+              onClick={() => handleAddToCart(item)}
+            >
+              View Item
+            </button>
           </div>
           // <div key={item.name} className="">
           //   <img src={item.image} alt="" />
