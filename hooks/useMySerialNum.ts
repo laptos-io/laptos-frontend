@@ -4,7 +4,7 @@ import useSWR from "swr";
 import useAptosClient from "./useAptosClient";
 import useAptosWallet from "./useAptosWallet";
 
-export default function useNFTPools(
+export default function useMySerialNum(
   handleString?: string,
   refreshInterval?: number
 ) {

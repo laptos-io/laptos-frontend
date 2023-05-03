@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useRecoilValue } from "recoil";
 
 import { FT_SWAP_ADDRESSES } from "@/constants/contracts";
+import useMySerialNum from "@/hooks/useMySerialNum";
 import useNFTMetadataHandle from "@/hooks/useNFTMetadataHandle";
-import useNFTPools from "@/hooks/useNFTPools";
 import usePoolNums from "@/hooks/usePoolNums";
 import { networkState } from "@/recoil/network";
 
@@ -21,7 +21,7 @@ export default function MyPoolsPage() {
     [poolNumsHandleData?.data]
   );
 
-  const { data: serialNumData } = useNFTPools(poolNumsHandle, 5000);
+  const { data: serialNumData } = useMySerialNum(poolNumsHandle, 5000);
 
   const serialNum = useMemo(() => {
     return serialNumData as unknown as string;

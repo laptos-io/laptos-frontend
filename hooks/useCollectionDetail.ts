@@ -1,7 +1,10 @@
-import { parseFixed } from "@ethersproject/bignumber";
+import { formatFixed, parseFixed } from "@ethersproject/bignumber";
+import { useMemo } from "react";
 
 import { BASIC_DECIMALS } from "@/constants/misc";
-import { MarketPlaceCollection } from "@/types/nft";
+import { ICollection, MarketPlaceCollection } from "@/types/nft";
+
+import useAllPoolsForPublic from "./useAllPoolsForPublic";
 
 const images = [
   "https://i.seadn.io/gae/CdfWxZtiC8zWloxRE5EspzzDVXM1P9c1Z0MZ0Bw4u8K4WA_R41W_IvcIfONnam3LyRXcg7uEqteb75YdT8CfO0UJy0GJj_0AvmUBww?auto=format&w=640",
@@ -34,8 +37,45 @@ const mockData: MarketPlaceCollection = {
       };
     }),
 };
-export default function useCollectionDetail(name: string) {
+export default function useCollectionDetail(collectName: string | null) {
+  const { data, error, isLoading } = useAllPoolsForPublic(11);
+  const collectionData = useMemo(() => {
+    if (!collectName) return null;
+    const res: ICollection = {
+      name: collectName,
+      type: "",
+      listing: 0,
+      items: [],
+    };
+
+    for (const item of data) {
+      const { tokenIds, poolType, spotPrice, delta } = item;
+      if (!tokenIds?.length) {
+        continue;
+      }
+      const {
+        token_data_id: { collection, name },
+      } = tokenIds?.[0] || {};
+      const tokenId = name.match(/#(\d+)$/)?.[1];
+      if (collection === collectName) {
+        (res.coverImage =
+          "https://bafybeibgtdkejt77t4w2fl2kh36cokmj5vipwfsxsn2z2fx35trlvg2kc4.ipfs.nftstorage.link/4.png"),
+          res.items?.push({
+            ...item,
+            image: `https://bafybeibgtdkejt77t4w2fl2kh36cokmj5vipwfsxsn2z2fx35trlvg2kc4.ipfs.nftstorage.link/${tokenId}.png`,
+          });
+        res.listing += tokenIds.length;
+        res.floorPrice =
+          res.floorPrice &&
+          spotPrice &&
+          parseFixed(res.floorPrice!, BASIC_DECIMALS).lt(spotPrice)
+            ? res.floorPrice
+            : formatFixed(spotPrice.toString(), BASIC_DECIMALS);
+      }
+    }
+    return res;
+  }, [collectName, data]);
   return {
-    data: mockData,
+    data: collectionData,
   };
 }

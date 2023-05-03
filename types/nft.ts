@@ -3,6 +3,7 @@ import { TokenId } from "@martiandao/aptos-web3-bip44.js";
 import { TokenTypes, Types } from "aptos";
 
 import { ICoinInfo } from "./misc";
+import { INFTPairMetadata } from "./nftpair";
 
 export interface ICollection {
   name: string;
@@ -13,6 +14,11 @@ export interface ICollection {
   bestOffer?: string;
   offerTVL?: string;
   volumn?: string;
+  items?: Array<
+    INFTPairMetadata & {
+      image?: string;
+    }
+  >;
 }
 
 export enum CreatePoolStep {
@@ -55,4 +61,10 @@ export interface MarketPlaceCollection {
   creator: string;
   image: string;
   items: MarketPlaceCollectionTokenItem[];
+}
+
+export interface ICollectionItem extends TokenId {
+  name: string;
+  image: string;
+  price: BigNumber;
 }
