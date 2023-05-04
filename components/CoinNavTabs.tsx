@@ -13,7 +13,7 @@ export default function CoinNavTabs() {
   return (
     <div className="flex w-full justify-center">
       <nav className="inline-flex space-x-14" aria-label="Tabs">
-        <Link passHref href={`/swap?network=${network}`}>
+        <Link passHref href={`/swap`}>
           <a
             className={`relative inline-block h-12 pb-4 ${
               pathname === "/swap" ? "text-primary" : "text-text-default"
@@ -28,7 +28,7 @@ export default function CoinNavTabs() {
           </a>
         </Link>
 
-        <Link passHref href={`/pool?network=${network}`}>
+        <Link passHref href={`/pool`}>
           <a
             className={`relative inline-block h-12 pb-4 ${
               pathname === "/pool" ? "text-primary" : "text-text-default"

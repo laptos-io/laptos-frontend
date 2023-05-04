@@ -166,7 +166,7 @@ export default function CollectionsPage() {
             <a className="text-primary">list your NFTs</a>
           </Link>{" "}
           ，or{" "}
-          <Link href={`/nft/pool/create?network=${network}`} passHref>
+          <Link href={`/nft/pool/create`} passHref>
             <a className="text-primary">
               create a new pool to buy and sell in bulk.
             </a>
@@ -177,7 +177,7 @@ export default function CollectionsPage() {
         data={groupedData}
         columns={tableColumns}
         onClickRow={(row) =>
-          router.push(`/nft/collections/${row.name}?network=${network}`)
+          router.push(`/nft/collections/${row.name}`)
         }
       />
     </div>

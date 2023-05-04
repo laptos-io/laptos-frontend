@@ -19,11 +19,11 @@ const Layout: React.FC<React.PropsWithChildren<{ children: ReactNode }>> = ({
 }) => {
   const { pathname, query } = useRouter();
   const network = useMemo(() => {
-    if (!query.network) return Network.Mainnet;
+    if (!query.network) return Network.Testnet;
     if (Object.keys(Network).includes(query.network as Network)) {
       return query.network as Network;
     }
-    return Network.Mainnet;
+    return Network.Testnet;
   }, [query.network]);
   const [networkStateData, setNetworkStateData] = useRecoilState(networkState);
 

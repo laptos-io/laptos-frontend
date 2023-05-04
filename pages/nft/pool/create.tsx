@@ -287,7 +287,7 @@ export default function CreateNFTPoolPage() {
           )}
         </div>
       </div>
-      <div className="flex w-full justify-center space-x-3">
+      <div className="flex hidden w-full justify-center space-x-3">
         <button
           className="rounded bg-primary px-3 py-1.5 leading-6 text-white"
           onClick={handleGetPoolMetadata}

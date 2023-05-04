@@ -71,7 +71,7 @@ const Home: NextPage = () => {
         </p>
         <div className="mt-20 flex items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8">
           <div className="flex flex-col items-center justify-center space-y-5">
-            <Link passHref href={`/swap?network=${network}`}>
+            <Link passHref href={`/swap`}>
               <a className="inline-block w-full rounded-xl bg-primary px-3 py-3 text-center font-semibold leading-6 text-white transition-colors hover:bg-primary-lighter sm:w-[160px]">
                 FT Swap
               </a>
@@ -79,9 +79,11 @@ const Home: NextPage = () => {
             <p className=" text-xs text-secondary">The first DEX on Aptos</p>
           </div>
           <div className="flex flex-col items-center justify-center space-y-5">
-            <button className="inline-block w-full rounded-xl bg-primary px-3 py-3 text-center font-semibold leading-6 text-white transition-colors hover:bg-primary-lighter sm:w-[160px]">
-              NFT Swap
-            </button>
+            <Link passHref href={`/nft/collections`}>
+              <a className="inline-block w-full rounded-xl bg-primary px-3 py-3 text-center font-semibold leading-6 text-white transition-colors hover:bg-primary-lighter sm:w-[160px]">
+                NFT Swap
+              </a>
+            </Link>
             <p className=" text-xs text-secondary">
               Send & store tokens on Aptos
             </p>

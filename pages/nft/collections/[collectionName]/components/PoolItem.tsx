@@ -19,9 +19,7 @@ export default function PoolItem({ data }: Props) {
   const { collectionName } = router.query;
   return (
     <Link
-      href={`/nft/collections/${collectionName as string}/${
-        data.serialNum
-      }?network=${network}`}
+      href={`/nft/collections/${collectionName as string}/${data.serialNum}`}
       passHref
     >
       <a className="card mb-4 block w-full p-4">

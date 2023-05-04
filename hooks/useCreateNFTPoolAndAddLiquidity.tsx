@@ -73,7 +73,7 @@ export default function useCreateNFTPoolAndAddLiquidity(
       );
       console.log("@@@ create NFT Pair", txn);
       toast.success("创建成功");
-      router.replace(`/nft/pool/my?network=${network}`);
+      router.replace(`/nft/pool/my`);
     } catch (error) {
       console.log(error);
       setError(error);

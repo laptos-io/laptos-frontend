@@ -31,7 +31,7 @@ export default function Header() {
       }`}
     >
       <div className="inline-flex items-center justify-start space-x-3">
-        <Link passHref href={`/?network=${network}`}>
+        <Link passHref href={`/`}>
           <a>
             <Image width={120} height={40} src="/logo-full.svg" alt="logo" />
           </a>
@@ -39,7 +39,7 @@ export default function Header() {
 
         <SearchBox className="hidden sm:block sm:w-48 lg:w-60 2xl:w-80" />
 
-        <Link passHref href={`/nft/collections?network=${network}`}>
+        <Link passHref href={`/nft/collections`}>
           <a className="rounded-lg bg-primary/20 px-3 py-2 font-medium leading-6 text-primary transition-colors hover:bg-primary/30">
             Collections
           </a>
@@ -47,12 +47,12 @@ export default function Header() {
       </div>
 
       <div className="inline-flex items-center justify-start space-x-3">
-        {/* <Link passHref href={`/nft?network=${network}`}>
+        {/* <Link passHref href={`/nft`}>
           <a className="rounded-lg bg-primary/20 px-3 py-2 font-medium leading-6 text-primary transition-colors hover:bg-primary/30">
             Your NFTs
           </a>
         </Link> */}
-        <Link passHref href={`/pool?network=${network}`}>
+        <Link passHref href={`/pool`}>
           <a className="rounded-lg bg-primary/20 px-3 py-2 font-medium leading-6 text-primary transition-colors hover:bg-primary/30">
             Your Pools
           </a>
